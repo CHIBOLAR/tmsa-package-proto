@@ -40,6 +40,7 @@ function showCreatePackageStep3() {
 
 function showPackageCreated() {
     showView('success');
+    console.log('Navigated to success page');
 }
 
 function showCalendar() {
@@ -209,15 +210,18 @@ function renderCalendar() {
         
         // Check if this day has sessions
         const daySession = currentPackageData?.sessions?.find(s => s.date === currentDate);
-        
+
         let sessionInfo = '';
         if (daySession) {
             dayElement.classList.add('has-session');
-            if (currentPackageData.capacity.individual) {
-                sessionInfo = `<div class="day-sessions">${daySession.timeSlots.length} slot(s)</div>`;
+            if (currentPackageData.capacity?.individual) {
+                sessionInfo = `<div class="day-sessions">${daySession.timeSlots?.length || 1} slot(s)</div>`;
             } else {
-                const capacity = currentPackageData.capacity;
-                sessionInfo = `<div class="day-sessions">${capacity.current}/${capacity.max} enrolled</div>`;
+                const capacity = currentPackageData.capacity || {};
+                const current = capacity.current || 0;
+                const max = capacity.max || 8;
+                const status = current >= (capacity.min || 3) ? 'Active' : 'Need more';
+                sessionInfo = `<div class="day-sessions">${current}/${max} enrolled<br><small>${status}</small></div>`;
             }
         } else if (currentPackageData?.days?.includes(dayName)) {
             sessionInfo = '<div class="day-sessions">Available</div>';
@@ -248,22 +252,26 @@ function selectCalendarDay(date, session) {
     
     if (session) {
         let capacityInfo = '';
-        if (currentPackageData.capacity.individual) {
+        if (currentPackageData.capacity?.individual) {
             capacityInfo = '<p><strong>Type:</strong> Individual Training (1-on-1)</p>';
         } else {
-            const cap = currentPackageData.capacity;
+            const cap = currentPackageData.capacity || {};
+            const current = cap.current || 0;
+            const max = cap.max || 8;
+            const min = cap.min || 3;
             capacityInfo = `
-                <p><strong>Capacity:</strong> ${cap.current}/${cap.max} participants</p>
-                <p><strong>Status:</strong> ${cap.current >= cap.min ? 'Active' : `Need ${cap.min - cap.current} more to start`}</p>
+                <p><strong>Capacity:</strong> ${current}/${max} participants</p>
+                <p><strong>Status:</strong> ${current >= min ? '✅ Active' : `⚠️ Need ${min - current} more to start`}</p>
+                <p><strong>Enrollment:</strong> ${((current/max)*100).toFixed(0)}% full</p>
             `;
         }
-        
+
         sessionInfo.innerHTML = `
             <h4>Session Details - ${new Date(date).toLocaleDateString()}</h4>
-            <p><strong>Time Slots:</strong> ${session.timeSlots.join(', ')}</p>
+            <p><strong>Time Slots:</strong> ${session.timeSlots?.join(', ') || 'Not specified'}</p>
             ${capacityInfo}
-            <p><strong>Status:</strong> ${session.status === 'booked' ? '🔵 Booked' : '🟢 Available'}</p>
-            ${session.sessionNumber ? `<p><strong>Session:</strong> ${session.sessionNumber} of total</p>` : ''}
+            <p><strong>Booking Status:</strong> ${session.status === 'booked' ? '🔵 Booked' : '🟢 Available'}</p>
+            ${session.sessionNumber ? `<p><strong>Session Number:</strong> ${session.sessionNumber}</p>` : ''}
             <div class="session-actions">
                 <button class="btn btn-small btn-danger" onclick="cancelSession('${date}')">Cancel Session</button>
                 <button class="btn btn-small" onclick="editSession('${date}')">Edit Details</button>
@@ -273,6 +281,7 @@ function selectCalendarDay(date, session) {
         sessionInfo.innerHTML = `
             <h4>No Session - ${new Date(date).toLocaleDateString()}</h4>
             <p>No training session scheduled for this day.</p>
+            <p>Available training days: ${currentPackageData?.days?.join(', ') || 'Not configured'}</p>
         `;
     }
 }
@@ -508,11 +517,15 @@ function addTimeSlot() {
     newTimeSlot.className = 'time-slot-item';
     
     const participantType = document.querySelector('input[name="participantType"]:checked')?.value;
+    const maxCapacity = document.getElementById('maxParticipants')?.value || 8;
+    const minCapacity = document.getElementById('minParticipants')?.value || 3;
+
     let statusText = 'Available for booking';
-    
+
     if (participantType === 'group') {
-        const maxCapacity = document.getElementById('maxCapacity')?.value || 8;
-        statusText = `0/${maxCapacity} enrolled`;
+        statusText = `0/${maxCapacity} enrolled (min ${minCapacity})`;
+    } else {
+        statusText = '1-on-1 available';
     }
     
     newTimeSlot.innerHTML = `
@@ -531,7 +544,7 @@ function addTimeSlot() {
             <option value="19:00">7:00 PM</option>
             <option value="20:00">8:00 PM</option>
         </select>
-        <span class="slot-status">Available for booking</span>
+        <span class="slot-status">${statusText}</span>
         <button type="button" class="btn btn-small btn-danger" onclick="removeTimeSlot(this)">Remove</button>
     `;
     timeSlotsList.appendChild(newTimeSlot);
@@ -1317,15 +1330,28 @@ function goBackToStep2() {
 }
 
 function createPackage() {
-    if (validateStep3()) {
-        const packageData = collectPackageData();
-        console.log('Creating package:', packageData);
-        
-        // Simulate package creation
-        setTimeout(() => {
-            showPackageCreated();
-            generateBookingLink(packageData);
-        }, 500);
+    console.log('createPackage() called');
+
+    try {
+        if (validateStep3()) {
+            console.log('Step 3 validation passed');
+            const packageData = collectPackageData();
+            console.log('Package data collected:', packageData);
+
+            // Simulate package creation
+            setTimeout(() => {
+                console.log('Creating package...');
+                showPackageCreated();
+                generateBookingLink(packageData);
+                console.log('Package creation completed');
+            }, 500);
+        } else {
+            console.log('Step 3 validation failed');
+            alert('Please fix the validation errors before creating the package.');
+        }
+    } catch (error) {
+        console.error('Error in createPackage:', error);
+        alert('There was an error creating the package. Please try again.');
     }
 }
 
@@ -1421,7 +1447,10 @@ function generateComprehensivePreview() {
         `;
         
         if (data.participantType === 'group') {
-            overviewHTML += `<div style="margin-top: 12px;"><strong>👥 Capacity:</strong> ${data.minCapacity || 2}-${data.maxCapacity || 8} participants</div>`;
+            overviewHTML += `<div style="margin-top: 12px;"><strong>👥 Capacity:</strong> ${data.minCapacity || 2}-${data.maxCapacity || 8} participants per session</div>`;
+            overviewHTML += `<div style="margin-top: 8px;"><strong>📊 Requirements:</strong> Minimum ${data.minCapacity || 2} to start, Maximum ${data.maxCapacity || 8} per session</div>`;
+        } else {
+            overviewHTML += `<div style="margin-top: 12px;"><strong>👤 Format:</strong> Individual 1-on-1 personalized training</div>`;
         }
         
         overviewContainer.innerHTML = overviewHTML;
@@ -1441,7 +1470,7 @@ function generateComprehensivePreview() {
                     <div class="session-info">
                         <div class="session-date">${session.date}</div>
                         <div class="session-details">
-                            ${session.time} • ${session.type} 
+                            ${session.time} • ${session.type}
                             ${session.capacity ? `• ${session.capacity}` : ''}
                         </div>
                     </div>
@@ -1479,7 +1508,7 @@ function generatePreviewSessions(data) {
                         date: currentDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
                         time: formatTime(time),
                         type: data.participantType === 'group' ? 'Group Session' : 'Individual Session',
-                        capacity: data.participantType === 'group' ? `${data.minCapacity || 2}-${data.maxCapacity || 8} participants` : '1-on-1',
+                        capacity: data.participantType === 'group' ? `${data.minCapacity || 2}-${data.maxCapacity || 8} participants (Group)` : '1-on-1 (Individual)',
                         originalDate: new Date(currentDate)
                     });
                 });
@@ -1508,7 +1537,7 @@ function generatePreviewSessions(data) {
                             date: currentDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
                             time: formatTime(time),
                             type: `Session ${sessionsAdded + 1}/${totalSessions}`,
-                            capacity: data.participantType === 'group' ? `${data.minCapacity || 2}-${data.maxCapacity || 8} participants` : '1-on-1',
+                            capacity: data.participantType === 'group' ? `${data.minCapacity || 2}-${data.maxCapacity || 8} participants (Group)` : '1-on-1 (Individual)',
                             sessionNumber: sessionsAdded + 1,
                             originalDate: new Date(currentDate)
                         });

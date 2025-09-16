@@ -167,6 +167,37 @@
                     </div>
 
                     <div class="form-section">
+                        <h3>Training Location</h3>
+                        <div class="form-group">
+                            <label for="locationType">Location Type *</label>
+                            <select id="locationType" class="form-control" required>
+                                <option value="">Select location type...</option>
+                                <option value="fixed">Fixed Location</option>
+                                <option value="multiple">Multiple Locations Available</option>
+                                <option value="client-specific">Client-Specific (Personal Training)</option>
+                            </select>
+                        </div>
+
+                        <div id="locationDetails" class="location-details">
+                            <div id="locationsList" class="locations-list">
+                                <div class="location-item">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" placeholder="Location name (e.g., Central Park, Gold's Gym)">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" placeholder="Full address with landmarks">
+                                        </div>
+                                        <button type="button" class="btn btn-small btn-danger" onclick="removeLocation(this)">Remove</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-secondary btn-small" onclick="event.preventDefault(); addLocation(); return false;">+ Add Location</button>
+                            <small class="form-help">Add all locations where this training can be conducted</small>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
                         <h3>Participant Type</h3>
                         <div class="participant-choice">
                             <label class="choice-card">
@@ -209,13 +240,13 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="minParticipants">Minimum Participants *</label>
-                                    <input type="number" id="minParticipants" class="form-control" 
+                                    <input type="number" id="minParticipants" class="form-control"
                                            value="3" min="2" max="50">
                                     <small class="form-help">Package will only start when minimum is reached</small>
                                 </div>
                                 <div class="form-group">
                                     <label for="maxParticipants">Maximum Capacity *</label>
-                                    <input type="number" id="maxParticipants" class="form-control" 
+                                    <input type="number" id="maxParticipants" class="form-control"
                                            value="8" min="2" max="50">
                                     <small class="form-help">Maximum number of participants per session</small>
                                 </div>
@@ -384,7 +415,7 @@
                                 <button type="button" class="btn btn-small btn-danger" onclick="removeTimeSlot(this)">Remove</button>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-secondary btn-small" onclick="addTimeSlot()">+ Add Time Slot</button>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="event.preventDefault(); addTimeSlot(); return false;">+ Add Time Slot</button>
                     </div>
 
                     <!-- Schedule Exceptions -->
@@ -407,7 +438,7 @@
                                         <option value="other">Other</option>
                                     </select>
                                 </div>
-                                <button type="button" class="btn btn-secondary btn-small" onclick="addException()">Add Exception</button>
+                                <button type="button" class="btn btn-secondary btn-small" onclick="event.preventDefault(); addException(); return false;">Add Exception</button>
                             </div>
                         </div>
                     </div>
@@ -438,37 +469,6 @@
                 </div>
 
                 <form class="wizard-form">
-                    <div class="form-section">
-                        <h3>Training Location</h3>
-                        <div class="form-group">
-                            <label for="locationType">Location Type *</label>
-                            <select id="locationType" class="form-control" required>
-                                <option value="">Select location type...</option>
-                                <option value="fixed">Fixed Location</option>
-                                <option value="multiple">Multiple Locations Available</option>
-                                <option value="client-specific">Client-Specific (Personal Training)</option>
-                            </select>
-                        </div>
-
-                        <div id="locationDetails" class="location-details">
-                            <div id="locationsList" class="locations-list">
-                                <div class="location-item">
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" placeholder="Location name (e.g., Central Park, Gold's Gym)">
-                                        </div>
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" placeholder="Full address with landmarks">
-                                        </div>
-                                        <button type="button" class="btn btn-small btn-danger" onclick="removeLocation(this)">Remove</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-secondary btn-small" onclick="addLocation()">+ Add Location</button>
-                            <small class="form-help">Add all locations where this training can be conducted</small>
-                        </div>
-                    </div>
-
                     <div class="form-section">
                         <h3>Equipment & Requirements</h3>
                         <div class="form-group">
