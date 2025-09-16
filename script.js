@@ -416,37 +416,45 @@ document.addEventListener('DOMContentLoaded', function() {
     toggleScheduleType();
     updateDurationDisplay();
     
-    // Form validation
-    function validateStep1() {
-        const packageName = document.getElementById('packageName').value.trim();
-        const packagePrice = document.getElementById('packagePrice').value;
-        
-        const errors = document.querySelectorAll('.error-message');
-        errors.forEach(error => error.style.display = 'none');
-        
-        let isValid = true;
-        
-        if (!packageName) {
-            document.querySelector('.error-message').style.display = 'block';
-            isValid = false;
-        }
-        
-        if (!packagePrice || parseFloat(packagePrice) <= 0) {
-            document.querySelectorAll('.error-message')[1].style.display = 'block';
-            isValid = false;
-        }
-        
-        return isValid;
-    }
-    
-    // Override next button for step 1 validation
+    // Enhanced button event listeners with validation
     const step1NextButton = document.querySelector('#create-package-step1 .btn-primary');
     if (step1NextButton) {
         step1NextButton.addEventListener('click', function(e) {
             e.preventDefault();
-            if (validateStep1()) {
-                showCreatePackageStep2();
-            }
+            goToStep2();
+        });
+    }
+    
+    const step2NextButton = document.querySelector('#create-package-step2 .btn-primary');
+    if (step2NextButton) {
+        step2NextButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            goToStep3();
+        });
+    }
+    
+    const step3CreateButton = document.querySelector('#create-package-step3 .btn-success');
+    if (step3CreateButton) {
+        step3CreateButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            createPackage();
+        });
+    }
+    
+    // Back button handlers
+    const step2BackButton = document.querySelector('#create-package-step2 .btn-secondary');
+    if (step2BackButton) {
+        step2BackButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            goToStep1();
+        });
+    }
+    
+    const step3BackButton = document.querySelector('#create-package-step3 .btn-secondary');
+    if (step3BackButton) {
+        step3BackButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            goBackToStep2();
         });
     }
     
@@ -609,6 +617,364 @@ function setupSessionEditModal() {
             }
         });
     });
+}
+
+// Form validation for all steps
+function validateStep1() {
+    const packageName = document.getElementById('packageName')?.value?.trim();
+    const packagePrice = document.getElementById('packagePrice')?.value;
+    const participantType = document.querySelector('input[name="participantType"]:checked');
+    
+    let isValid = true;
+    const errors = [];
+    
+    if (!packageName || packageName.length < 3) {
+        errors.push('Package name must be at least 3 characters');
+        isValid = false;
+    }
+    
+    if (!packagePrice || parseFloat(packagePrice) <= 0) {
+        errors.push('Package price must be greater than 0');
+        isValid = false;
+    }
+    
+    if (!participantType) {
+        errors.push('Please select participant type');
+        isValid = false;
+    }
+    
+    // Display errors
+    displayErrors('step1', errors);
+    return isValid;
+}
+
+function validateStep2() {
+    const scheduleType = document.querySelector('input[name="scheduleType"]:checked');
+    let isValid = true;
+    const errors = [];
+    
+    if (!scheduleType) {
+        errors.push('Please select schedule type');
+        isValid = false;
+    }
+    
+    if (scheduleType?.value === 'days') {
+        const selectedDays = document.querySelectorAll('.day-btn.active');
+        if (selectedDays.length === 0) {
+            errors.push('Please select at least one day');
+            isValid = false;
+        }
+    } else if (scheduleType?.value === 'sessions') {
+        const totalSessions = document.getElementById('totalSessions')?.value;
+        const sessionsPerWeek = document.getElementById('sessionsPerWeek')?.value;
+        const startDate = document.getElementById('packageStartDate')?.value;
+        
+        if (!totalSessions || parseInt(totalSessions) < 1) {
+            errors.push('Total sessions must be at least 1');
+            isValid = false;
+        }
+        
+        if (!sessionsPerWeek || parseInt(sessionsPerWeek) < 1) {
+            errors.push('Sessions per week must be at least 1');
+            isValid = false;
+        }
+        
+        if (!startDate) {
+            errors.push('Package start date is required for fixed packages');
+            isValid = false;
+        }
+    }
+    
+    // Check if at least one batch/time slot is added
+    const batches = document.querySelectorAll('.batch-item');
+    if (batches.length === 0) {
+        errors.push('Please add at least one time slot');
+        isValid = false;
+    }
+    
+    displayErrors('step2', errors);
+    return isValid;
+}
+
+function validateStep3() {
+    const description = document.getElementById('packageDescription')?.value?.trim();
+    const locations = document.querySelectorAll('.location-item input[type="text"]');
+    let isValid = true;
+    const errors = [];
+    
+    if (!description || description.length < 10) {
+        errors.push('Package description must be at least 10 characters');
+        isValid = false;
+    }
+    
+    // Check if at least one location is properly filled
+    let hasValidLocation = false;
+    for (let i = 0; i < locations.length; i += 2) {
+        const locationName = locations[i]?.value?.trim();
+        const locationAddress = locations[i + 1]?.value?.trim();
+        if (locationName && locationAddress) {
+            hasValidLocation = true;
+            break;
+        }
+    }
+    
+    if (!hasValidLocation) {
+        errors.push('Please add at least one complete location (name and address)');
+        isValid = false;
+    }
+    
+    displayErrors('step3', errors);
+    return isValid;
+}
+
+function displayErrors(step, errors) {
+    // Clear existing errors
+    const existingErrors = document.querySelectorAll(`#create-package-${step} .validation-errors`);
+    existingErrors.forEach(error => error.remove());
+    
+    if (errors.length > 0) {
+        const errorContainer = document.createElement('div');
+        errorContainer.className = 'validation-errors';
+        errorContainer.style.cssText = 'background: #fee; border: 1px solid #fcc; color: #c33; padding: 12px; border-radius: 6px; margin: 16px 0;';
+        
+        const errorList = document.createElement('ul');
+        errorList.style.margin = '0';
+        errorList.style.paddingLeft = '20px';
+        
+        errors.forEach(error => {
+            const errorItem = document.createElement('li');
+            errorItem.textContent = error;
+            errorList.appendChild(errorItem);
+        });
+        
+        errorContainer.appendChild(errorList);
+        
+        const stepContainer = document.querySelector(`#create-package-${step} .form-container`);
+        if (stepContainer) {
+            stepContainer.insertBefore(errorContainer, stepContainer.firstChild);
+        }
+    }
+}
+
+// Enhanced navigation with validation
+function goToStep2() {
+    if (validateStep1()) {
+        showCreatePackageStep2();
+        updateProgressBar(2);
+    }
+}
+
+function goToStep3() {
+    if (validateStep2()) {
+        showCreatePackageStep3();
+        updateProgressBar(3);
+        generatePackageSummary();
+    }
+}
+
+function goToStep1() {
+    showCreatePackageStep1();
+    updateProgressBar(1);
+}
+
+function goBackToStep2() {
+    showCreatePackageStep2();
+    updateProgressBar(2);
+}
+
+function createPackage() {
+    if (validateStep3()) {
+        const packageData = collectPackageData();
+        console.log('Creating package:', packageData);
+        
+        // Simulate package creation
+        setTimeout(() => {
+            showPackageCreated();
+            generateBookingLink(packageData);
+        }, 500);
+    }
+}
+
+// Package data collection
+function collectPackageData() {
+    const packageName = document.getElementById('packageName')?.value?.trim();
+    const packagePrice = parseFloat(document.getElementById('packagePrice')?.value) || 0;
+    const participantType = document.querySelector('input[name="participantType"]:checked')?.value;
+    const scheduleType = document.querySelector('input[name="scheduleType"]:checked')?.value;
+    const description = document.getElementById('packageDescription')?.value?.trim();
+    
+    const data = {
+        name: packageName,
+        price: packagePrice,
+        participantType: participantType,
+        scheduleType: scheduleType,
+        description: description,
+        created: new Date().toISOString(),
+        id: generatePackageId(packageName)
+    };
+    
+    if (participantType === 'group') {
+        data.minCapacity = parseInt(document.getElementById('minCapacity')?.value) || 2;
+        data.maxCapacity = parseInt(document.getElementById('maxCapacity')?.value) || 8;
+    }
+    
+    if (scheduleType === 'days') {
+        const selectedDays = Array.from(document.querySelectorAll('.day-btn.active')).map(btn => btn.textContent);
+        data.days = selectedDays;
+        data.packageType = 'ongoing';
+    } else {
+        data.totalSessions = parseInt(document.getElementById('totalSessions')?.value) || 0;
+        data.sessionsPerWeek = parseInt(document.getElementById('sessionsPerWeek')?.value) || 0;
+        data.startDate = document.getElementById('packageStartDate')?.value;
+        data.packageType = 'fixed';
+        
+        const weeks = Math.ceil(data.totalSessions / data.sessionsPerWeek);
+        if (data.startDate) {
+            const endDate = new Date(data.startDate);
+            endDate.setDate(endDate.getDate() + (weeks * 7));
+            data.endDate = endDate.toISOString().split('T')[0];
+        }
+    }
+    
+    // Collect time slots
+    const timeSlots = Array.from(document.querySelectorAll('.time-select')).map(select => select.value);
+    data.timeSlots = timeSlots;
+    
+    // Collect locations
+    const locationElements = document.querySelectorAll('.location-item');
+    data.locations = Array.from(locationElements).map(item => {
+        const inputs = item.querySelectorAll('input[type="text"]');
+        return {
+            name: inputs[0]?.value?.trim() || '',
+            address: inputs[1]?.value?.trim() || ''
+        };
+    }).filter(loc => loc.name && loc.address);
+    
+    // Collect exceptions
+    const exceptionElements = document.querySelectorAll('.exception-item');
+    data.exceptions = Array.from(exceptionElements).map(item => {
+        const date = item.querySelector('.exception-date')?.textContent;
+        const reason = item.querySelector('.exception-reason')?.textContent;
+        return { date, reason };
+    });
+    
+    return data;
+}
+
+function generatePackageId(name) {
+    const prefix = name.substring(0, 3).toUpperCase();
+    const year = new Date().getFullYear();
+    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    return `${prefix}-${year}-${random}`;
+}
+
+function generatePackageSummary() {
+    const data = collectPackageData();
+    const summaryContainer = document.querySelector('#create-package-step3 .form-section:last-child');
+    
+    if (summaryContainer) {
+        let summaryHTML = `
+            <div class="package-summary" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h4>📋 Package Summary</h4>
+                <div class="summary-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+                    <div><strong>Package:</strong> ${data.name}</div>
+                    <div><strong>Price:</strong> ₹${data.price}</div>
+                    <div><strong>Type:</strong> ${data.participantType === 'group' ? 'Group Training' : 'Individual Training'}</div>
+                    <div><strong>Schedule:</strong> ${data.packageType === 'ongoing' ? 'Ongoing' : 'Fixed Duration'}</div>
+                </div>
+        `;
+        
+        if (data.packageType === 'ongoing') {
+            summaryHTML += `<div style="margin-top: 12px;"><strong>Training Days:</strong> ${data.days?.join(', ')}</div>`;
+        } else {
+            summaryHTML += `<div style="margin-top: 12px;"><strong>Duration:</strong> ${data.totalSessions} sessions over ${Math.ceil(data.totalSessions / data.sessionsPerWeek)} weeks</div>`;
+        }
+        
+        if (data.timeSlots?.length > 0) {
+            const timeDisplay = data.timeSlots.map(time => {
+                const hour = parseInt(time.split(':')[0]);
+                const suffix = hour >= 12 ? 'PM' : 'AM';
+                const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+                return `${displayHour}:${time.split(':')[1]} ${suffix}`;
+            }).join(', ');
+            summaryHTML += `<div style="margin-top: 8px;"><strong>Time Slots:</strong> ${timeDisplay}</div>`;
+        }
+        
+        summaryHTML += '</div>';
+        
+        // Remove existing summary
+        const existingSummary = summaryContainer.querySelector('.package-summary');
+        if (existingSummary) {
+            existingSummary.remove();
+        }
+        
+        summaryContainer.insertAdjacentHTML('afterbegin', summaryHTML);
+    }
+}
+
+function generateBookingLink(packageData) {
+    const baseUrl = window.location.origin + window.location.pathname;
+    const bookingUrl = `${baseUrl}#book/${packageData.id}`;
+    
+    const bookingLinkElement = document.getElementById('booking-link');
+    if (bookingLinkElement) {
+        bookingLinkElement.value = bookingUrl;
+    }
+    
+    const packageIdElement = document.getElementById('created-package-id');
+    if (packageIdElement) {
+        packageIdElement.textContent = packageData.id;
+    }
+    
+    const packageDetailsElement = document.getElementById('created-package-details');
+    if (packageDetailsElement) {
+        packageDetailsElement.innerHTML = `
+            <div class="created-package-info">
+                <h4>${packageData.name}</h4>
+                <p><strong>Type:</strong> ${packageData.packageType === 'ongoing' ? 'Ongoing Package' : 'Fixed Duration Package'}</p>
+                <p><strong>Price:</strong> ₹${packageData.price}</p>
+                ${packageData.packageType === 'ongoing' 
+                    ? `<p><strong>Days:</strong> ${packageData.days?.join(', ')}</p>`
+                    : `<p><strong>Duration:</strong> ${packageData.totalSessions} sessions (${Math.ceil(packageData.totalSessions / packageData.sessionsPerWeek)} weeks)</p>`
+                }
+                <p><strong>Locations:</strong> ${packageData.locations?.length || 0} location(s) configured</p>
+            </div>
+        `;
+    }
+}
+
+function updateProgressBar(step) {
+    const progressSteps = document.querySelectorAll('.progress-step');
+    progressSteps.forEach((stepEl, index) => {
+        if (index < step) {
+            stepEl.classList.add('completed');
+            stepEl.classList.remove('active');
+        } else if (index === step - 1) {
+            stepEl.classList.add('active');
+            stepEl.classList.remove('completed');
+        } else {
+            stepEl.classList.remove('active', 'completed');
+        }
+    });
+}
+
+function copyBookingLink() {
+    const bookingLinkInput = document.getElementById('booking-link');
+    if (bookingLinkInput) {
+        bookingLinkInput.select();
+        document.execCommand('copy');
+        
+        // Show feedback
+        const copyBtn = document.querySelector('.copy-link-btn');
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = '✓ Copied!';
+        copyBtn.style.background = '#27ae60';
+        
+        setTimeout(() => {
+            copyBtn.textContent = originalText;
+            copyBtn.style.background = '';
+        }, 2000);
+    }
 }
 
 // Update dashboard calendar button
