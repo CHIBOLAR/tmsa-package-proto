@@ -151,6 +151,51 @@ function removeLocation(button) {
     button.parentElement.remove();
 }
 
+// Time Slot Management  
+function addTimeSlot() {
+    const batchesList = document.querySelector('.batches-list');
+    if (!batchesList) return;
+    
+    const batchCount = batchesList.children.length;
+    const newBatch = document.createElement('div');
+    newBatch.className = 'batch-item';
+    
+    const participantType = document.querySelector('input[name="participantType"]:checked')?.value;
+    let statusText = 'Available for booking';
+    
+    if (participantType === 'group') {
+        const maxCapacity = document.getElementById('maxCapacity')?.value || 8;
+        statusText = `0/${maxCapacity} enrolled`;
+    }
+    
+    newBatch.innerHTML = `
+        <select class="form-control time-select">
+            <option value="6:00">6:00 AM</option>
+            <option value="7:00">7:00 AM</option>
+            <option value="8:00">8:00 AM</option>
+            <option value="9:00">9:00 AM</option>
+            <option value="10:00">10:00 AM</option>
+            <option value="11:00">11:00 AM</option>
+            <option value="14:00">2:00 PM</option>
+            <option value="15:00">3:00 PM</option>
+            <option value="16:00">4:00 PM</option>
+            <option value="17:00">5:00 PM</option>
+            <option value="18:00">6:00 PM</option>
+            <option value="19:00">7:00 PM</option>
+            <option value="20:00">8:00 PM</option>
+        </select>
+        <span class="batch-status" id="batch-status-${batchCount}">${statusText}</span>
+        <button type="button" class="btn btn-small btn-danger" onclick="removeTimeSlot(this)">Remove</button>
+    `;
+    batchesList.appendChild(newBatch);
+    updateSchedulePreview();
+}
+
+function removeTimeSlot(button) {
+    button.parentElement.remove();
+    updateSchedulePreview();
+}
+
 // Batch/Time Slot Management
 function addBatch() {
     const batchesList = document.querySelector('.batches-list');
@@ -480,12 +525,28 @@ document.addEventListener('DOMContentLoaded', function() {
         input.addEventListener('change', simulateConflictCheck);
     });
     
-    // Close modal when clicking outside
-    document.getElementById('copy-package-modal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            hideCopyPackage();
+    // Initialize the app - Show dashboard by default
+    showDashboard();
+    
+    // Setup additional event listeners
+    setupSessionEditModal();
+    updateCalendarButton();
+    
+    // Close modals when clicking outside
+    const modals = ['copy-package-modal', 'session-edit-modal', 'session-cancel-modal'];
+    modals.forEach(modalId => {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
         }
     });
+    
+    console.log('TMSA Package Management Prototype Loaded');
+    console.log('Demo packages:', demoPackages);
 });
 
 // Utility Functions
@@ -987,28 +1048,3 @@ function updateCalendarButton() {
     });
 }
 
-// Initialize the app
-document.addEventListener('DOMContentLoaded', function() {
-    // Show dashboard by default
-    showDashboard();
-    
-    // Setup additional event listeners
-    setupSessionEditModal();
-    updateCalendarButton();
-    
-    // Close modals when clicking outside
-    const modals = ['copy-package-modal', 'session-edit-modal', 'session-cancel-modal'];
-    modals.forEach(modalId => {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.remove('active');
-                }
-            });
-        }
-    });
-    
-    console.log('TMSA Package Management Prototype Loaded');
-    console.log('Demo packages:', demoPackages);
-});
