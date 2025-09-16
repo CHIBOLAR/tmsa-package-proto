@@ -62,38 +62,36 @@ function createCopy() {
     }, 100);
 }
 
-// Updated Business Logic Functions
+// Reorganized Business Logic Functions
 function updateSchedulePreview() {
-    const packageType = document.querySelector('input[name="packageType"]:checked')?.value;
     const scheduleType = document.querySelector('input[name="scheduleType"]:checked')?.value;
-    const bookingType = document.querySelector('input[name="bookingType"]:checked')?.value;
+    const participantType = document.querySelector('input[name="participantType"]:checked')?.value;
     
     let previewText = '';
     
-    if (packageType === 'ongoing') {
-        previewText = 'Ongoing training - starts when first participant joins';
-    } else {
-        const duration = document.getElementById('packageDuration')?.value;
-        const startDate = document.getElementById('packageStartDate')?.value;
-        if (duration && startDate) {
-            const endDate = new Date(startDate);
-            endDate.setDate(endDate.getDate() + (parseInt(duration) * 7));
-            previewText = `Fixed ${duration}-week program from ${new Date(startDate).toLocaleDateString()} to ${endDate.toLocaleDateString()}`;
-        } else {
-            previewText = 'Fixed duration program - set start date and duration';
-        }
-    }
-    
     if (scheduleType === 'days') {
+        previewText = '📅 <strong>Ongoing Package</strong> - Continuous sessions that start when participants join';
         const activeDays = document.querySelectorAll('.day-btn.active');
         const dayNames = Array.from(activeDays).map(btn => btn.textContent).join(', ');
         if (dayNames) {
             previewText += `<br>Training days: ${dayNames}`;
         }
     } else {
+        const totalSessions = document.getElementById('totalSessions')?.value;
         const sessionsPerWeek = document.getElementById('sessionsPerWeek')?.value;
-        if (sessionsPerWeek) {
-            previewText += `<br>${sessionsPerWeek} sessions per week - specific days TBD`;
+        const startDate = document.getElementById('packageStartDate')?.value;
+        
+        previewText = '📅 <strong>Fixed Package</strong> - Set duration with specific start and end dates';
+        
+        if (totalSessions && sessionsPerWeek) {
+            const weeks = Math.ceil(parseInt(totalSessions) / parseInt(sessionsPerWeek));
+            previewText += `<br>${totalSessions} sessions over ${weeks} weeks (${sessionsPerWeek} sessions per week)`;
+            
+            if (startDate) {
+                const endDate = new Date(startDate);
+                endDate.setDate(endDate.getDate() + (weeks * 7));
+                previewText += `<br>Runs from ${new Date(startDate).toLocaleDateString()} to ${endDate.toLocaleDateString()}`;
+            }
         }
     }
     
@@ -109,10 +107,23 @@ function updateSchedulePreview() {
         previewText += `<br>Available times: ${times}`;
     }
     
+    if (participantType === 'group') {
+        const minCap = document.getElementById('minCapacity')?.value;
+        const maxCap = document.getElementById('maxCapacity')?.value;
+        if (minCap && maxCap) {
+            previewText += `<br>Group size: ${minCap}-${maxCap} participants`;
+        }
+    } else {
+        previewText += '<br>Individual training (1-on-1)';
+    }
+    
     const previewElement = document.getElementById('preview-text');
     if (previewElement) {
         previewElement.innerHTML = previewText;
     }
+    
+    // Update duration display for fixed packages
+    updateDurationDisplay();
 }
 
 function updatePerSessionPrice() {
@@ -220,30 +231,21 @@ function hideCustomRecurrence() {
     document.getElementById('custom-recurrence-modal').classList.remove('active');
 }
 
-// Package Type Logic
-function togglePackageType() {
-    const packageType = document.querySelector('input[name="packageType"]:checked')?.value;
-    const fixedOptions = document.getElementById('fixed-duration-options');
+// Participant Type Logic
+function toggleParticipantType() {
+    const participantType = document.querySelector('input[name="participantType"]:checked')?.value;
+    const individualOptions = document.getElementById('individual-options');
+    const groupOptions = document.getElementById('group-options');
     
-    if (packageType === 'fixed') {
-        fixedOptions.style.display = 'block';
+    if (participantType === 'group') {
+        individualOptions.style.display = 'none';
+        groupOptions.style.display = 'block';
     } else {
-        fixedOptions.style.display = 'none';
-    }
-    updateSchedulePreview();
-}
-
-// Booking Type Logic
-function toggleBookingType() {
-    const bookingType = document.querySelector('input[name="bookingType"]:checked')?.value;
-    const capacitySection = document.getElementById('group-capacity');
-    
-    if (bookingType === 'group') {
-        capacitySection.style.display = 'block';
-    } else {
-        capacitySection.style.display = 'none';
+        individualOptions.style.display = 'block';
+        groupOptions.style.display = 'none';
     }
     updateBatchStatuses();
+    updateSchedulePreview();
 }
 
 // Schedule Type Logic
@@ -262,19 +264,31 @@ function toggleScheduleType() {
     updateSchedulePreview();
 }
 
-// Update batch statuses based on booking type
+// Update batch statuses based on participant type
 function updateBatchStatuses() {
-    const bookingType = document.querySelector('input[name="bookingType"]:checked')?.value;
+    const participantType = document.querySelector('input[name="participantType"]:checked')?.value;
     const batchStatuses = document.querySelectorAll('.batch-status');
     
     batchStatuses.forEach(status => {
-        if (bookingType === 'group') {
+        if (participantType === 'group') {
             const maxCapacity = document.getElementById('maxCapacity')?.value || 8;
             status.textContent = `0/${maxCapacity} enrolled`;
         } else {
             status.textContent = 'Available for booking';
         }
     });
+}
+
+// Update duration display for fixed packages
+function updateDurationDisplay() {
+    const totalSessions = document.getElementById('totalSessions')?.value;
+    const sessionsPerWeek = document.getElementById('sessionsPerWeek')?.value;
+    const durationDisplay = document.getElementById('duration-display');
+    
+    if (totalSessions && sessionsPerWeek && durationDisplay) {
+        const weeks = Math.ceil(parseInt(totalSessions) / parseInt(sessionsPerWeek));
+        durationDisplay.textContent = `Duration: ${weeks} weeks (${totalSessions} sessions ÷ ${sessionsPerWeek} per week)`;
+    }
 }
 
 function applyCustomRecurrence() {
@@ -293,16 +307,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Package type change
-    const packageTypeRadios = document.querySelectorAll('input[name="packageType"]');
-    packageTypeRadios.forEach(radio => {
-        radio.addEventListener('change', togglePackageType);
-    });
-    
-    // Booking type change
-    const bookingTypeRadios = document.querySelectorAll('input[name="bookingType"]');
-    bookingTypeRadios.forEach(radio => {
-        radio.addEventListener('change', toggleBookingType);
+    // Participant type change
+    const participantTypeRadios = document.querySelectorAll('input[name="participantType"]');
+    participantTypeRadios.forEach(radio => {
+        radio.addEventListener('change', toggleParticipantType);
     });
     
     // Schedule type change
@@ -310,12 +318,6 @@ document.addEventListener('DOMContentLoaded', function() {
     scheduleTypeRadios.forEach(radio => {
         radio.addEventListener('change', toggleScheduleType);
     });
-    
-    // Package duration change
-    const packageDuration = document.getElementById('packageDuration');
-    if (packageDuration) {
-        packageDuration.addEventListener('change', updateSchedulePreview);
-    }
     
     // Package start date change
     const packageStartDate = document.getElementById('packageStartDate');
@@ -326,7 +328,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Sessions per week change
     const sessionsPerWeek = document.getElementById('sessionsPerWeek');
     if (sessionsPerWeek) {
-        sessionsPerWeek.addEventListener('change', updateSchedulePreview);
+        sessionsPerWeek.addEventListener('change', function() {
+            updateSchedulePreview();
+            updateDurationDisplay();
+        });
+    }
+    
+    // Total sessions change
+    const totalSessions = document.getElementById('totalSessions');
+    if (totalSessions) {
+        totalSessions.addEventListener('change', function() {
+            updateSchedulePreview();
+            updateDurationDisplay();
+        });
     }
     
     // Auto-calculate per session price
@@ -398,9 +412,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize displays
     updatePerSessionPrice();
     updateSchedulePreview();
-    togglePackageType();
-    toggleBookingType();
+    toggleParticipantType();
     toggleScheduleType();
+    updateDurationDisplay();
     
     // Form validation
     function validateStep1() {

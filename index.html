@@ -96,7 +96,7 @@
             </div>
         </div>
 
-        <!-- Create Package Step 1 -->
+        <!-- Create Package Step 1 - Basic Info -->
         <div id="create-package-step1" class="view">
             <div class="container">
                 <div class="wizard-header">
@@ -107,121 +107,97 @@
                 <form class="package-form">
                     <div class="form-group">
                         <label for="packageName">Package Name *</label>
-                        <input type="text" id="packageName" class="form-control" value="Strength Training Program">
+                        <input type="text" id="packageName" class="form-control" placeholder="e.g., Strength Training Program">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sessionDuration">Session Duration *</label>
+                        <select id="sessionDuration" class="form-control">
+                            <option value="30">30 minutes</option>
+                            <option value="45">45 minutes</option>
+                            <option value="60" selected>60 minutes</option>
+                            <option value="90">90 minutes</option>
+                            <option value="120">2 hours</option>
+                        </select>
                     </div>
 
                     <div class="form-section">
-                        <h3>Package Type</h3>
+                        <h3>Participant Type</h3>
                         <div class="form-group">
-                            <label>Package Structure *</label>
                             <div class="radio-group">
                                 <label class="radio-label">
-                                    <input type="radio" name="packageType" value="ongoing" checked>
-                                    Ongoing Package (starts when someone joins, continuous sessions)
+                                    <input type="radio" name="participantType" value="individual" checked>
+                                    <strong>Individual Training</strong><br>
+                                    <small>One-on-one personalized sessions</small>
                                 </label>
                                 <label class="radio-label">
-                                    <input type="radio" name="packageType" value="fixed">
-                                    Fixed Duration Package (set start/end dates)
+                                    <input type="radio" name="participantType" value="group">
+                                    <strong>Group Training</strong><br>
+                                    <small>Multiple participants in the same session</small>
                                 </label>
                             </div>
                         </div>
                         
-                        <div id="fixed-duration-options" class="duration-options" style="display: none;">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="packageDuration">Duration</label>
-                                    <select id="packageDuration" class="form-control">
-                                        <option value="4">4 weeks</option>
-                                        <option value="6">6 weeks</option>
-                                        <option value="8" selected>8 weeks</option>
-                                        <option value="12">12 weeks</option>
-                                        <option value="16">16 weeks</option>
-                                    </select>
+                        <!-- Individual Training Options -->
+                        <div id="individual-options" class="participant-options">
+                            <div class="info-box">
+                                <h4>Individual Training Features:</h4>
+                                <ul>
+                                    <li>Personalized attention and customized program</li>
+                                    <li>Flexible scheduling based on client availability</li>
+                                    <li>Premium pricing for exclusive service</li>
+                                    <li>Sessions start immediately when client books</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Group Training Options -->
+                        <div id="group-options" class="participant-options" style="display: none;">
+                            <div class="form-group">
+                                <label>Group Size:</label>
+                                <div class="capacity-inputs">
+                                    <span>Minimum participants:</span>
+                                    <input type="number" id="minCapacity" value="3" class="form-control small" min="2">
+                                    <span>Maximum capacity:</span>
+                                    <input type="number" id="maxCapacity" value="8" class="form-control small" min="2">
                                 </div>
-                                <div class="form-group">
-                                    <label for="packageStartDate">Fixed Start Date</label>
-                                    <input type="date" id="packageStartDate" class="form-control">
-                                </div>
+                                <small class="form-help">Package will only start when minimum participants are enrolled</small>
+                            </div>
+                            <div class="info-box">
+                                <h4>Group Training Features:</h4>
+                                <ul>
+                                    <li>Cost-effective pricing for participants</li>
+                                    <li>Social interaction and motivation</li>
+                                    <li>Fixed schedule for all participants</li>
+                                    <li>Requires minimum enrollment to start</li>
+                                </ul>
                             </div>
                         </div>
                         
                         <div class="form-group">
-                            <label for="sessionDuration">Session Duration *</label>
-                            <select id="sessionDuration" class="form-control">
-                                <option value="30">30 minutes</option>
-                                <option value="45">45 minutes</option>
-                                <option value="60" selected>60 minutes</option>
-                                <option value="90">90 minutes</option>
-                                <option value="120">2 hours</option>
+                            <label for="ageGroup">Target Age Group:</label>
+                            <select id="ageGroup" class="form-control">
+                                <option value="kids">Kids (5-12)</option>
+                                <option value="teens">Teens (13-17)</option>
+                                <option value="adults" selected>Adults (18+)</option>
+                                <option value="seniors">Seniors (65+)</option>
+                                <option value="all">All ages welcome</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <h3>Booking Type</h3>
-                        <div class="form-group">
-                            <label>Training Type *</label>
-                            <div class="radio-group">
-                                <label class="radio-label">
-                                    <input type="radio" name="bookingType" value="personal" checked>
-                                    Personal Training (1-on-1)
-                                </label>
-                                <label class="radio-label">
-                                    <input type="radio" name="bookingType" value="group">
-                                    Group Training
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div id="group-capacity" class="capacity-section" style="display: none;">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Group Capacity:</label>
-                                    <div class="capacity-inputs">
-                                        <span>Minimum:</span>
-                                        <input type="number" id="minCapacity" value="3" class="form-control small" min="2">
-                                        <span>Maximum:</span>
-                                        <input type="number" id="maxCapacity" value="8" class="form-control small" min="2">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
+                        <h3>Package Pricing</h3>
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="ageGroup">Age Group:</label>
-                                <select id="ageGroup" class="form-control">
-                                    <option value="kids">Kids (5-12)</option>
-                                    <option value="teens">Teens (13-17)</option>
-                                    <option value="adults" selected>Adults (18+)</option>
-                                    <option value="seniors">Seniors (65+)</option>
-                                    <option value="all">All ages</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="skillLevel">Skill Level:</label>
-                                <select id="skillLevel" class="form-control">
-                                    <option value="beginner">Beginner</option>
-                                    <option value="intermediate">Intermediate</option>
-                                    <option value="advanced">Advanced</option>
-                                    <option value="all" selected>All levels</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h3>Pricing</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="packagePrice">Package price:</label>
+                                <label for="packagePrice">Package Price *</label>
                                 <div class="price-input">
                                     <select class="currency-select">
-                                        <option value="INR">INR</option>
+                                        <option value="INR">₹ INR</option>
                                     </select>
-                                    <input type="number" id="packagePrice" class="form-control" value="4800.00" step="0.01">
+                                    <input type="number" id="packagePrice" class="form-control" placeholder="4800" step="0.01">
                                 </div>
-                                <div class="per-session">Per session: ₹600.00 (auto-calculated)</div>
+                                <div class="per-session" id="price-info">Total package price (pricing varies by schedule type)</div>
                             </div>
                         </div>
                     </div>
@@ -239,51 +215,37 @@
             </div>
         </div>
 
-        <!-- Create Package Step 2 - Location & Schedule -->
+        <!-- Create Package Step 2 - Schedule -->
         <div id="create-package-step2" class="view">
             <div class="container">
                 <div class="wizard-header">
-                    <h1>Location & Schedule</h1>
-                    <div class="status-indicator">Calculating sessions...</div>
+                    <h1>Schedule & Timing</h1>
+                    <div class="status-indicator">Configure your training schedule...</div>
                 </div>
 
                 <form class="package-form">
-                    <div class="form-section">
-                        <h3>Location Details</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="locationType">Location Type *</label>
-                                <select id="locationType" class="form-control">
-                                    <option value="fixed">Fixed Location</option>
-                                    <option value="multiple" selected>Multiple Locations</option>
-                                    <option value="client-specific">Client-Specific</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div id="location-details">
-                            <div class="location-list">
-                                <div class="location-item">
-                                    <input type="text" placeholder="Location name (e.g., Central Park)" class="form-control">
-                                    <input type="text" placeholder="Full address" class="form-control">
-                                    <button type="button" class="btn btn-small btn-danger">Remove</button>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-secondary" onclick="addLocation()">+ Add Location</button>
-                        </div>
-                    </div>
 
                     <div class="form-section">
                         <h3>Schedule Pattern</h3>
+                        <div class="schedule-type-info">
+                            <div class="info-banner">
+                                📝 <strong>Choose your schedule approach:</strong><br>
+                                • <strong>Specific Days</strong> = Ongoing package (continuous, starts when someone joins)<br>
+                                • <strong>Session Count</strong> = Fixed package (set duration with start/end dates)
+                            </div>
+                        </div>
+                        
                         <div class="form-group">
-                            <label>Schedule Type *</label>
                             <div class="radio-group">
                                 <label class="radio-label">
                                     <input type="radio" name="scheduleType" value="days" checked>
-                                    Select specific days of the week
+                                    <strong>Specific Days</strong> - Select which days of the week<br>
+                                    <small>Creates an ongoing package that runs continuously</small>
                                 </label>
                                 <label class="radio-label">
                                     <input type="radio" name="scheduleType" value="sessions">
-                                    Set number of sessions per week
+                                    <strong>Session Count</strong> - Set total number of sessions<br>
+                                    <small>Creates a fixed-duration package with set start and end dates</small>
                                 </label>
                             </div>
                         </div>
@@ -300,10 +262,27 @@
                                     <button type="button" class="day-btn" data-day="sat">Sat</button>
                                     <button type="button" class="day-btn" data-day="sun">Sun</button>
                                 </div>
+                                <small class="form-help">Package will be available on these days every week</small>
                             </div>
                         </div>
 
                         <div id="sessions-schedule" class="schedule-option" style="display: none;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="totalSessions">Total Sessions:</label>
+                                    <select id="totalSessions" class="form-control">
+                                        <option value="8">8 sessions</option>
+                                        <option value="12" selected>12 sessions</option>
+                                        <option value="16">16 sessions</option>
+                                        <option value="20">20 sessions</option>
+                                        <option value="24">24 sessions</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="packageStartDate">Package Start Date:</label>
+                                    <input type="date" id="packageStartDate" class="form-control">
+                                </div>
+                            </div>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="sessionsPerWeek">Sessions per week:</label>
@@ -315,9 +294,8 @@
                                         <option value="5">5 sessions</option>
                                     </select>
                                 </div>
-                                <div class="form-group">
-                                    <label>Trainer will schedule specific days</label>
-                                    <div class="schedule-note">Days will be arranged based on trainer and participant availability</div>
+                                <div class="session-calculation">
+                                    <span id="duration-display">Duration: 6 weeks (12 sessions ÷ 2 per week)</span>
                                 </div>
                             </div>
                         </div>
@@ -353,32 +331,9 @@
                         </div>
                     </div>
 
-                    <div class="schedule-preview">
-                        <div class="schedule-summary" id="schedule-summary">
-                            <strong>Schedule Preview:</strong><br>
-                            <span id="preview-text">Training available Monday & Wednesday at selected time slots</span>
-                        </div>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="showCreatePackageStep1()">← Back</button>
-                        <button type="button" class="btn btn-primary" onclick="showCreatePackageStep3()">Next: Details →</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Create Package Step 3 - Details & Exceptions -->
-        <div id="create-package-step3" class="view">
-            <div class="container">
-                <div class="wizard-header">
-                    <h1>Package Details & Exceptions</h1>
-                </div>
-
-                <form class="package-form">
                     <div class="form-section">
                         <h3>Schedule Exceptions</h3>
-                        <p>Add dates when regular sessions won't happen</p>
+                        <p>Add dates when regular sessions won't happen (holidays, trainer unavailable, etc.)</p>
                         <div class="exceptions-list">
                             <!-- Exceptions will be added dynamically -->
                         </div>
@@ -404,23 +359,79 @@
                         </div>
                     </div>
 
+                    <div class="schedule-preview">
+                        <div class="schedule-summary" id="schedule-summary">
+                            <strong>Schedule Preview:</strong><br>
+                            <span id="preview-text">Training available Monday & Wednesday at selected time slots</span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="showCreatePackageStep1()">← Back</button>
+                        <button type="button" class="btn btn-primary" onclick="showCreatePackageStep3()">Next: Package Details →</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Create Package Step 3 - Package Details -->
+        <div id="create-package-step3" class="view">
+            <div class="container">
+                <div class="wizard-header">
+                    <h1>Package Details</h1>
+                </div>
+
+                <form class="package-form">
                     <div class="form-section">
-                        <h3>Package Resources</h3>
+                        <h3>Training Location</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="locationType">Location Type *</label>
+                                <select id="locationType" class="form-control">
+                                    <option value="fixed">Fixed Location</option>
+                                    <option value="multiple" selected>Multiple Locations Available</option>
+                                    <option value="client-specific">Client-Specific (Personal Training)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="location-details">
+                            <div class="location-list">
+                                <div class="location-item">
+                                    <input type="text" placeholder="Location name (e.g., Central Park, Gold's Gym)" class="form-control">
+                                    <input type="text" placeholder="Full address with landmarks" class="form-control">
+                                    <button type="button" class="btn btn-small btn-danger" onclick="removeLocation(this)">Remove</button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-secondary" onclick="addLocation()">+ Add Location</button>
+                            <small class="form-help">Add all locations where this training can be conducted</small>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Equipment & Requirements</h3>
                         <div class="form-group">
                             <label for="equipment">Required Equipment:</label>
                             <textarea id="equipment" class="form-control" rows="2" placeholder="List all equipment needed (e.g., dumbbells, resistance bands, yoga mats)">Dumbbells, resistance bands, yoga mats</textarea>
+                            <small class="form-help">Equipment that participants need to bring or that will be provided</small>
                         </div>
                         <div class="form-group">
                             <label for="prerequisites">Prerequisites:</label>
                             <textarea id="prerequisites" class="form-control" rows="2" placeholder="Any requirements or previous experience needed">No prior experience required</textarea>
+                            <small class="form-help">Physical fitness level, experience, or any medical clearances needed</small>
                         </div>
                     </div>
 
                     <div class="form-section">
                         <h3>Package Description</h3>
                         <div class="form-group">
-                            <label for="description">Public Description:</label>
-                            <textarea id="description" class="form-control" rows="4" placeholder="Description that participants will see when booking">8-week strength training program designed to build functional strength and muscle endurance. Perfect for beginners to intermediate levels. All equipment provided. Small group setting with personalized attention.</textarea>
+                            <label for="description">Public Description *</label>
+                            <textarea id="description" class="form-control" rows="4" placeholder="Description that participants will see when booking">Strength training program designed to build functional strength and muscle endurance. Perfect for beginners to intermediate levels. All equipment provided. Professional instruction with personalized attention.</textarea>
+                            <small class="form-help">This description will appear on your booking page and marketing materials</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="whatToExpect">What to Expect:</label>
+                            <textarea id="whatToExpect" class="form-control" rows="3" placeholder="What will a typical session look like?">Each session includes warm-up, strength training exercises, technique coaching, and cool-down. Sessions are tailored to your fitness level and goals.</textarea>
+                            <small class="form-help">Help participants understand what they'll experience in each session</small>
                         </div>
                     </div>
 
