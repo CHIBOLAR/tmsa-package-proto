@@ -35,11 +35,267 @@ function showPackageCreated() {
 }
 
 function showCalendar() {
-    showView('calendar-view');
+    showView('calendar');
 }
 
 function showSessionsList() {
     showView('sessions-list');
+}
+
+// Calendar functionality
+let currentCalendarDate = new Date();
+let currentPackageData = null;
+
+function openPackageCalendar(packageId) {
+    // Get package data based on ID
+    const packages = {
+        'strength-training': {
+            name: 'Strength Training',
+            type: 'Individual • Ongoing',
+            days: ['Mon', 'Wed', 'Fri'],
+            timeSlots: ['9:00 AM', '6:00 PM'],
+            capacity: { individual: true },
+            sessions: generatePackageSessions('strength-training', 'ongoing')
+        },
+        'morning-yoga': {
+            name: 'Morning Yoga',
+            type: 'Group • Fixed 8 weeks',
+            days: ['Tue', 'Thu'],
+            timeSlots: ['8:00 AM'],
+            capacity: { min: 4, max: 8, current: 5 },
+            sessions: generatePackageSessions('morning-yoga', 'fixed')
+        },
+        'youth-soccer': {
+            name: 'Youth Soccer',
+            type: 'Group • Fixed 12 weeks',
+            days: ['Sat', 'Sun'],
+            timeSlots: ['10:00 AM'],
+            capacity: { min: 6, max: 12, current: 2 },
+            sessions: generatePackageSessions('youth-soccer', 'fixed')
+        }
+    };
+
+    currentPackageData = packages[packageId];
+    
+    document.getElementById('calendar-package-name').textContent = currentPackageData.name;
+    document.getElementById('calendar-package-details').textContent = currentPackageData.type;
+    
+    showCalendar();
+    renderCalendar();
+}
+
+function generatePackageSessions(packageId, type) {
+    const sessions = [];
+    const today = new Date();
+    
+    if (type === 'ongoing') {
+        // Generate sessions for next 30 days
+        for (let i = 0; i < 30; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + i);
+            
+            // Check if this day matches package schedule
+            const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()];
+            if (currentPackageData && currentPackageData.days.includes(dayName)) {
+                sessions.push({
+                    date: date.toISOString().split('T')[0],
+                    day: dayName,
+                    status: Math.random() > 0.7 ? 'booked' : 'available',
+                    timeSlots: currentPackageData.timeSlots
+                });
+            }
+        }
+    } else {
+        // Generate fixed number of sessions
+        const sessionCount = packageId === 'morning-yoga' ? 16 : 24;
+        let sessionDate = new Date(today);
+        let added = 0;
+        
+        while (added < sessionCount) {
+            const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][sessionDate.getDay()];
+            if (currentPackageData && currentPackageData.days.includes(dayName)) {
+                sessions.push({
+                    date: sessionDate.toISOString().split('T')[0],
+                    day: dayName,
+                    status: Math.random() > 0.6 ? 'booked' : 'available',
+                    timeSlots: currentPackageData.timeSlots,
+                    sessionNumber: added + 1
+                });
+                added++;
+            }
+            sessionDate.setDate(sessionDate.getDate() + 1);
+        }
+    }
+    
+    return sessions;
+}
+
+function renderCalendar() {
+    const monthYear = document.getElementById('calendar-month-year');
+    const calendarDays = document.getElementById('calendar-days');
+    
+    const year = currentCalendarDate.getFullYear();
+    const month = currentCalendarDate.getMonth();
+    
+    monthYear.textContent = `${currentCalendarDate.toLocaleString('default', { month: 'long' })} ${year}`;
+    
+    // Clear previous calendar
+    calendarDays.innerHTML = '';
+    
+    // Get first day of month and number of days
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+    
+    // Add empty cells for days before the first day of the month
+    for (let i = 0; i < startingDayOfWeek; i++) {
+        const emptyDay = document.createElement('div');
+        emptyDay.className = 'calendar-day other-month';
+        calendarDays.appendChild(emptyDay);
+    }
+    
+    // Add days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day';
+        
+        const currentDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(year, month, day).getDay()];
+        
+        // Check if this day has sessions
+        const daySession = currentPackageData?.sessions?.find(s => s.date === currentDate);
+        
+        let sessionInfo = '';
+        if (daySession) {
+            dayElement.classList.add('has-session');
+            if (currentPackageData.capacity.individual) {
+                sessionInfo = `<div class="day-sessions">${daySession.timeSlots.length} slot(s)</div>`;
+            } else {
+                const capacity = currentPackageData.capacity;
+                sessionInfo = `<div class="day-sessions">${capacity.current}/${capacity.max} enrolled</div>`;
+            }
+        } else if (currentPackageData?.days?.includes(dayName)) {
+            sessionInfo = '<div class="day-sessions">Available</div>';
+        }
+        
+        dayElement.innerHTML = `
+            <div class="day-number">${day}</div>
+            ${sessionInfo}
+        `;
+        
+        dayElement.addEventListener('click', () => selectCalendarDay(currentDate, daySession));
+        
+        calendarDays.appendChild(dayElement);
+    }
+}
+
+function selectCalendarDay(date, session) {
+    // Remove previous selection
+    document.querySelectorAll('.calendar-day').forEach(day => {
+        day.classList.remove('selected');
+    });
+    
+    // Add selection to clicked day
+    event.target.closest('.calendar-day').classList.add('selected');
+    
+    // Show session details
+    const sessionInfo = document.getElementById('selected-session-info');
+    
+    if (session) {
+        let capacityInfo = '';
+        if (currentPackageData.capacity.individual) {
+            capacityInfo = '<p><strong>Type:</strong> Individual Training (1-on-1)</p>';
+        } else {
+            const cap = currentPackageData.capacity;
+            capacityInfo = `
+                <p><strong>Capacity:</strong> ${cap.current}/${cap.max} participants</p>
+                <p><strong>Status:</strong> ${cap.current >= cap.min ? 'Active' : `Need ${cap.min - cap.current} more to start`}</p>
+            `;
+        }
+        
+        sessionInfo.innerHTML = `
+            <h4>Session Details - ${new Date(date).toLocaleDateString()}</h4>
+            <p><strong>Time Slots:</strong> ${session.timeSlots.join(', ')}</p>
+            ${capacityInfo}
+            <p><strong>Status:</strong> ${session.status === 'booked' ? '🔵 Booked' : '🟢 Available'}</p>
+            ${session.sessionNumber ? `<p><strong>Session:</strong> ${session.sessionNumber} of total</p>` : ''}
+            <div class="session-actions">
+                <button class="btn btn-small btn-danger" onclick="cancelSession('${date}')">Cancel Session</button>
+                <button class="btn btn-small" onclick="editSession('${date}')">Edit Details</button>
+            </div>
+        `;
+    } else {
+        sessionInfo.innerHTML = `
+            <h4>No Session - ${new Date(date).toLocaleDateString()}</h4>
+            <p>No training session scheduled for this day.</p>
+        `;
+    }
+}
+
+function previousMonth() {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+    renderCalendar();
+}
+
+function nextMonth() {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+    renderCalendar();
+}
+
+function cancelSession(date) {
+    const session = currentPackageData.sessions.find(s => s.date === date);
+    if (!session) return;
+    
+    const isFixedPackage = currentPackageData.type.includes('Fixed');
+    const confirmMessage = isFixedPackage 
+        ? 'Cancel this session? A replacement session will be added at the end of the package.'
+        : 'Cancel this session? This will only cancel the session for this specific day.';
+    
+    if (confirm(confirmMessage)) {
+        // Update session status
+        session.status = 'cancelled';
+        
+        if (isFixedPackage) {
+            // For fixed packages, add a replacement session
+            const lastSessionDate = new Date(Math.max(...currentPackageData.sessions
+                .filter(s => s.sessionNumber)
+                .map(s => new Date(s.date).getTime())));
+            
+            // Add replacement session after the last session
+            const replacementDate = new Date(lastSessionDate);
+            replacementDate.setDate(replacementDate.getDate() + 7); // Add a week later
+            
+            const replacementSession = {
+                date: replacementDate.toISOString().split('T')[0],
+                day: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][replacementDate.getDay()],
+                status: 'replacement',
+                timeSlots: session.timeSlots,
+                sessionNumber: session.sessionNumber, // Keep the same session number
+                isReplacement: true
+            };
+            
+            currentPackageData.sessions.push(replacementSession);
+            
+            alert(`Session cancelled. Replacement session ${session.sessionNumber} scheduled for ${replacementDate.toLocaleDateString()}.`);
+        } else {
+            alert('Session cancelled for this day. Future sessions on this day remain scheduled.');
+        }
+        
+        renderCalendar();
+        
+        // Refresh the session details if this session was selected
+        const selectedDay = document.querySelector('.calendar-day.selected');
+        if (selectedDay) {
+            const selectedDate = selectedDay.dataset?.date || date;
+            const selectedSession = currentPackageData.sessions.find(s => s.date === selectedDate);
+            selectCalendarDay(selectedDate, selectedSession);
+        }
+    }
+}
+
+function editSession(date) {
+    alert('Session editing functionality would open here.');
 }
 
 // Modal Functions
@@ -241,26 +497,68 @@ function removeBatch(button) {
 
 // Exception Management
 function addException() {
-    const date = document.getElementById('exceptionDate').value;
-    const reason = document.getElementById('exceptionReason').value;
+    const dateInput = document.getElementById('exceptionDate');
+    const reasonSelect = document.getElementById('exceptionReason');
     
-    if (!date) return;
+    if (!dateInput || !reasonSelect) {
+        console.error('Exception form elements not found');
+        return;
+    }
     
-    const exceptionsList = document.querySelector('.exceptions-list');
+    const date = dateInput.value;
+    const reasonValue = reasonSelect.value;
+    const reasonText = reasonSelect.options[reasonSelect.selectedIndex].text;
+    
+    if (!date) {
+        alert('Please select a date for the exception');
+        return;
+    }
+    
+    const exceptionsList = document.getElementById('exceptionsList');
+    if (!exceptionsList) {
+        console.error('Exceptions list container not found');
+        return;
+    }
+    
+    // Check if exception already exists for this date
+    const existingExceptions = exceptionsList.querySelectorAll('.exception-item');
+    for (let exception of existingExceptions) {
+        const existingDate = exception.dataset.date;
+        if (existingDate === date) {
+            alert('Exception already exists for this date');
+            return;
+        }
+    }
+    
     const newException = document.createElement('div');
     newException.className = 'exception-item';
+    newException.dataset.date = date;
+    newException.dataset.reason = reasonValue;
     newException.innerHTML = `
-        <div>
-            <div class="exception-date">${new Date(date).toLocaleDateString()}</div>
-            <div class="exception-reason">${document.getElementById('exceptionReason').options[document.getElementById('exceptionReason').selectedIndex].text}</div>
+        <div class="exception-details">
+            <div class="exception-date">📅 ${new Date(date).toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            })}</div>
+            <div class="exception-reason">🚫 ${reasonText}</div>
         </div>
         <button type="button" class="btn btn-small btn-danger" onclick="removeException(this)">Remove</button>
     `;
+    
     exceptionsList.appendChild(newException);
     
     // Clear inputs
-    document.getElementById('exceptionDate').value = '';
-    document.getElementById('exceptionReason').selectedIndex = 0;
+    dateInput.value = '';
+    reasonSelect.selectedIndex = 0;
+    
+    // Update schedule preview if needed
+    if (typeof updateSchedulePreview === 'function') {
+        updateSchedulePreview();
+    }
+    
+    console.log('Exception added for date:', date, 'reason:', reasonText);
 }
 
 function removeException(button) {
@@ -279,18 +577,69 @@ function hideCustomRecurrence() {
 // Participant Type Logic
 function toggleParticipantType() {
     const participantType = document.querySelector('input[name="participantType"]:checked')?.value;
-    const individualOptions = document.getElementById('individual-options');
-    const groupOptions = document.getElementById('group-options');
+    const groupOptions = document.getElementById('groupOptions');
     
     if (participantType === 'group') {
-        individualOptions.style.display = 'none';
-        groupOptions.style.display = 'block';
+        if (groupOptions) {
+            groupOptions.style.display = 'block';
+        }
+        
+        // Show group-specific fields throughout the form
+        showGroupSpecificFields();
     } else {
-        individualOptions.style.display = 'block';
-        groupOptions.style.display = 'none';
+        if (groupOptions) {
+            groupOptions.style.display = 'none';
+        }
+        
+        // Show individual-specific fields throughout the form
+        showIndividualSpecificFields();
     }
     updateBatchStatuses();
     updateSchedulePreview();
+}
+
+function showGroupSpecificFields() {
+    // Update form labels and help text for group training
+    const packagePriceLabel = document.querySelector('label[for="packagePrice"]');
+    if (packagePriceLabel) {
+        packagePriceLabel.innerHTML = 'Package Price (per participant) *';
+    }
+    
+    const priceHelp = document.querySelector('.package-price-help');
+    if (priceHelp) {
+        priceHelp.textContent = 'Price each participant will pay for the complete package';
+    }
+    
+    // Show capacity-related elements
+    document.querySelectorAll('.group-only').forEach(el => {
+        el.style.display = 'block';
+    });
+    
+    document.querySelectorAll('.individual-only').forEach(el => {
+        el.style.display = 'none';
+    });
+}
+
+function showIndividualSpecificFields() {
+    // Update form labels for individual training  
+    const packagePriceLabel = document.querySelector('label[for="packagePrice"]');
+    if (packagePriceLabel) {
+        packagePriceLabel.innerHTML = 'Package Price *';
+    }
+    
+    const priceHelp = document.querySelector('.package-price-help');
+    if (priceHelp) {
+        priceHelp.textContent = 'Total price for the training package';
+    }
+    
+    // Hide capacity-related elements
+    document.querySelectorAll('.group-only').forEach(el => {
+        el.style.display = 'none';
+    });
+    
+    document.querySelectorAll('.individual-only').forEach(el => {
+        el.style.display = 'block';
+    });
 }
 
 // Schedule Type Logic
@@ -929,48 +1278,186 @@ function generatePackageId(name) {
     return `${prefix}-${year}-${random}`;
 }
 
-function generatePackageSummary() {
+function generateComprehensivePreview() {
     const data = collectPackageData();
-    const summaryContainer = document.querySelector('#step3 .form-section:last-child');
     
-    if (summaryContainer) {
-        let summaryHTML = `
-            <div class="package-summary" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <h4>📋 Package Summary</h4>
-                <div class="summary-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
-                    <div><strong>Package:</strong> ${data.name}</div>
-                    <div><strong>Price:</strong> ₹${data.price}</div>
-                    <div><strong>Type:</strong> ${data.participantType === 'group' ? 'Group Training' : 'Individual Training'}</div>
-                    <div><strong>Schedule:</strong> ${data.packageType === 'ongoing' ? 'Ongoing' : 'Fixed Duration'}</div>
-                </div>
+    // Generate package overview
+    const overviewContainer = document.getElementById('packageOverview');
+    if (overviewContainer) {
+        let overviewHTML = `
+            <div class="overview-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                <div><strong>📦 Package:</strong> ${data.name || 'Untitled Package'}</div>
+                <div><strong>💰 Price:</strong> ₹${data.price || 0}${data.participantType === 'group' ? '/participant' : ''}</div>
+                <div><strong>👤 Type:</strong> ${data.participantType === 'group' ? 'Group Training' : 'Individual Training'}</div>
+                <div><strong>📅 Schedule:</strong> ${data.packageType === 'ongoing' ? 'Ongoing' : 'Fixed Duration'}</div>
+            </div>
         `;
         
-        if (data.packageType === 'ongoing') {
-            summaryHTML += `<div style="margin-top: 12px;"><strong>Training Days:</strong> ${data.days?.join(', ')}</div>`;
-        } else {
-            summaryHTML += `<div style="margin-top: 12px;"><strong>Duration:</strong> ${data.totalSessions} sessions over ${Math.ceil(data.totalSessions / data.sessionsPerWeek)} weeks</div>`;
+        if (data.participantType === 'group') {
+            overviewHTML += `<div style="margin-top: 12px;"><strong>👥 Capacity:</strong> ${data.minCapacity || 2}-${data.maxCapacity || 8} participants</div>`;
         }
         
-        if (data.timeSlots?.length > 0) {
-            const timeDisplay = data.timeSlots.map(time => {
-                const hour = parseInt(time.split(':')[0]);
-                const suffix = hour >= 12 ? 'PM' : 'AM';
-                const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
-                return `${displayHour}:${time.split(':')[1]} ${suffix}`;
-            }).join(', ');
-            summaryHTML += `<div style="margin-top: 8px;"><strong>Time Slots:</strong> ${timeDisplay}</div>`;
-        }
-        
-        summaryHTML += '</div>';
-        
-        // Remove existing summary
-        const existingSummary = summaryContainer.querySelector('.package-summary');
-        if (existingSummary) {
-            existingSummary.remove();
-        }
-        
-        summaryContainer.insertAdjacentHTML('afterbegin', summaryHTML);
+        overviewContainer.innerHTML = overviewHTML;
     }
+    
+    // Generate sessions list
+    const sessionsList = document.getElementById('sessionsList');
+    if (sessionsList) {
+        const sessions = generatePreviewSessions(data);
+        let sessionsHTML = '';
+        
+        if (sessions.length === 0) {
+            sessionsHTML = '<p style="color: #666; text-align: center; padding: 20px;">Complete the schedule configuration to see sessions</p>';
+        } else {
+            sessionsHTML = sessions.map((session, index) => `
+                <div class="session-item" data-session-id="${index}">
+                    <div class="session-info">
+                        <div class="session-date">${session.date}</div>
+                        <div class="session-details">
+                            ${session.time} • ${session.type} 
+                            ${session.capacity ? `• ${session.capacity}` : ''}
+                        </div>
+                    </div>
+                    <div class="session-actions">
+                        <button class="btn btn-small btn-danger" onclick="cancelPreviewSession(${index})" 
+                                title="${data.packageType === 'ongoing' ? 'Cancel session for this day' : 'Cancel and add replacement session'}">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        sessionsList.innerHTML = sessionsHTML;
+    }
+}
+
+function generatePreviewSessions(data) {
+    const sessions = [];
+    const today = new Date();
+    
+    if (!data.scheduleType) return sessions;
+    
+    if (data.scheduleType === 'days' && data.days) {
+        // Generate next 30 days for ongoing package
+        const endDate = new Date(today.getTime() + (30 * 24 * 60 * 60 * 1000));
+        let currentDate = new Date(today);
+        
+        while (currentDate <= endDate) {
+            const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][currentDate.getDay()];
+            if (data.days.includes(dayName)) {
+                // Add session for each time slot
+                (data.timeSlots || ['9:00']).forEach(time => {
+                    sessions.push({
+                        date: currentDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+                        time: formatTime(time),
+                        type: data.participantType === 'group' ? 'Group Session' : 'Individual Session',
+                        capacity: data.participantType === 'group' ? `${data.minCapacity || 2}-${data.maxCapacity || 8} participants` : '1-on-1',
+                        originalDate: new Date(currentDate)
+                    });
+                });
+            }
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+    } else if (data.scheduleType === 'sessions' && data.totalSessions) {
+        // Generate fixed number of sessions
+        const totalSessions = parseInt(data.totalSessions) || 8;
+        const sessionsPerWeek = parseInt(data.sessionsPerWeek) || 2;
+        const startDate = data.startDate ? new Date(data.startDate) : new Date(today.getTime() + (24 * 60 * 60 * 1000));
+        
+        let currentDate = new Date(startDate);
+        let sessionsAdded = 0;
+        
+        while (sessionsAdded < totalSessions) {
+            const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][currentDate.getDay()];
+            
+            // For fixed sessions, assume training happens on weekdays or selected days
+            const trainingDays = ['Mon', 'Wed', 'Fri']; // Default, could be customized
+            
+            if (trainingDays.includes(dayName)) {
+                (data.timeSlots || ['9:00']).forEach(time => {
+                    if (sessionsAdded < totalSessions) {
+                        sessions.push({
+                            date: currentDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+                            time: formatTime(time),
+                            type: `Session ${sessionsAdded + 1}/${totalSessions}`,
+                            capacity: data.participantType === 'group' ? `${data.minCapacity || 2}-${data.maxCapacity || 8} participants` : '1-on-1',
+                            sessionNumber: sessionsAdded + 1,
+                            originalDate: new Date(currentDate)
+                        });
+                        sessionsAdded++;
+                    }
+                });
+            }
+            currentDate.setDate(currentDate.getDate() + 1);
+            
+            // Safety check to prevent infinite loop
+            if (currentDate.getTime() > today.getTime() + (365 * 24 * 60 * 60 * 1000)) {
+                break;
+            }
+        }
+    }
+    
+    return sessions.slice(0, 50); // Limit to first 50 sessions for performance
+}
+
+function formatTime(time) {
+    const [hour, minute] = time.split(':');
+    const h = parseInt(hour);
+    const suffix = h >= 12 ? 'PM' : 'AM';
+    const displayHour = h > 12 ? h - 12 : h === 0 ? 12 : h;
+    return `${displayHour}:${minute || '00'} ${suffix}`;
+}
+
+function cancelPreviewSession(sessionIndex) {
+    const data = collectPackageData();
+    const sessionItem = document.querySelector(`.session-item[data-session-id="${sessionIndex}"]`);
+    
+    if (!sessionItem) return;
+    
+    if (data.packageType === 'ongoing') {
+        // For ongoing packages, just mark as cancelled
+        if (confirm('Cancel this session? This will only cancel the session for this specific day.')) {
+            sessionItem.classList.add('cancelled');
+            sessionItem.querySelector('.session-details').innerHTML += ' • <span style="color: #dc3545;">CANCELLED</span>';
+            sessionItem.querySelector('.btn-danger').textContent = 'Cancelled';
+            sessionItem.querySelector('.btn-danger').disabled = true;
+        }
+    } else {
+        // For fixed packages, cancel and add replacement
+        if (confirm('Cancel this session? A replacement session will be added at the end of the package.')) {
+            sessionItem.classList.add('cancelled');
+            sessionItem.querySelector('.session-details').innerHTML += ' • <span style="color: #dc3545;">CANCELLED - Replacement Added</span>';
+            sessionItem.querySelector('.btn-danger').textContent = 'Cancelled';
+            sessionItem.querySelector('.btn-danger').disabled = true;
+            
+            // Add replacement session (simplified - would need more logic in real implementation)
+            const sessionsList = document.getElementById('sessionsList');
+            const replacementHTML = `
+                <div class="session-item" style="border-left-color: #fbbf24;">
+                    <div class="session-info">
+                        <div class="session-date">Replacement Session</div>
+                        <div class="session-details">
+                            To be scheduled • ${data.participantType === 'group' ? 'Group Session' : 'Individual Session'}
+                        </div>
+                    </div>
+                    <div class="session-actions">
+                        <button class="btn btn-small" disabled>Replacement</button>
+                    </div>
+                </div>
+            `;
+            sessionsList.insertAdjacentHTML('beforeend', replacementHTML);
+        }
+    }
+}
+
+function refreshPreview() {
+    generateComprehensivePreview();
+}
+
+// Update the existing function to use the new comprehensive preview
+function generatePackageSummary() {
+    generateComprehensivePreview();
 }
 
 function generateBookingLink(packageData) {

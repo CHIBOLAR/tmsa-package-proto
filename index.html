@@ -58,8 +58,8 @@
                                 <p>👤 Sarah Johnson - Next: Today 9:00 AM</p>
                             </div>
                             <div class="package-actions">
-                                <button class="btn btn-small">View Details</button>
-                                <button class="btn btn-small btn-secondary">Copy</button>
+                                <button class="btn btn-small" onclick="openPackageCalendar('strength-training')">View Calendar</button>
+                                <button class="btn btn-small btn-secondary" onclick="showCopyPackage()">Copy</button>
                             </div>
                         </div>
 
@@ -78,8 +78,8 @@
                                 <p>👥 5/8 enrolled • Starts Oct 15</p>
                             </div>
                             <div class="package-actions">
-                                <button class="btn btn-small">View Details</button>
-                                <button class="btn btn-small btn-secondary">Copy</button>
+                                <button class="btn btn-small" onclick="openPackageCalendar('morning-yoga')">View Calendar</button>
+                                <button class="btn btn-small btn-secondary" onclick="showCopyPackage()">Copy</button>
                             </div>
                         </div>
 
@@ -98,8 +98,8 @@
                                 <p>👥 2/12 enrolled • Needs 6 more to start</p>
                             </div>
                             <div class="package-actions">
-                                <button class="btn btn-small">View Details</button>
-                                <button class="btn btn-small btn-secondary">Copy</button>
+                                <button class="btn btn-small" onclick="openPackageCalendar('youth-soccer')">View Calendar</button>
+                                <button class="btn btn-small btn-secondary" onclick="showCopyPackage()">Copy</button>
                             </div>
                         </div>
                     </div>
@@ -162,7 +162,7 @@
                                 <input type="number" id="packagePrice" class="form-control" 
                                        placeholder="4800" min="0" step="100" required>
                             </div>
-                            <small class="form-help">Total price for the entire package</small>
+                            <small class="form-help package-price-help">Total price for the entire package</small>
                         </div>
                     </div>
 
@@ -412,15 +412,7 @@
                         </div>
                     </div>
 
-                    <!-- Schedule Preview -->
-                    <div class="schedule-preview">
-                        <h3>📋 Schedule Preview</h3>
-                        <div id="schedulePreview" class="preview-content">
-                            🔄 Ongoing Package - Training available Monday, Wednesday, Friday<br>
-                            ⏰ Time slots: 9:00 AM<br>
-                            👤 Individual training (1-on-1)
-                        </div>
-                    </div>
+                    <!-- Schedule preview removed - will show complete package preview at the end -->
 
                     <div class="wizard-actions">
                         <button type="button" class="btn btn-secondary" onclick="goToStep1()">← Back</button>
@@ -511,10 +503,28 @@
                         </div>
                     </div>
 
-                    <div class="package-summary">
-                        <h3>📦 Package Summary</h3>
-                        <div id="packageSummary" class="summary-content">
-                            <!-- Will be populated by JavaScript -->
+                    <div class="comprehensive-preview">
+                        <h3>📅 Complete Package Preview</h3>
+                        <div id="comprehensivePreview" class="preview-sections">
+                            <div class="preview-summary">
+                                <h4>Package Overview</h4>
+                                <div id="packageOverview">
+                                    <!-- Will be populated by JavaScript -->
+                                </div>
+                            </div>
+                            
+                            <div class="preview-sessions">
+                                <h4>Session Schedule</h4>
+                                <div id="sessionsList" class="sessions-list">
+                                    <!-- Will show complete list of sessions with cancel options -->
+                                </div>
+                            </div>
+                            
+                            <div class="preview-actions">
+                                <button type="button" class="btn btn-secondary btn-small" onclick="refreshPreview()">
+                                    🔄 Refresh Preview
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -571,6 +581,57 @@
                         <button class="btn btn-primary" onclick="showDashboard()">🏠 Go to Dashboard</button>
                         <button class="btn btn-secondary" onclick="showCreatePackage()">➕ Create Another</button>
                         <button class="btn btn-secondary">📊 View Analytics</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Package Calendar View -->
+        <div id="calendar" class="view">
+            <header class="app-header">
+                <button class="btn btn-secondary" onclick="showDashboard()">← Back to Dashboard</button>
+                <div>
+                    <h1 id="calendar-package-name">Package Calendar</h1>
+                    <p id="calendar-package-details">Package scheduling and booking details</p>
+                </div>
+            </header>
+
+            <div class="container">
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <div class="calendar-nav">
+                            <button class="btn btn-secondary" onclick="previousMonth()">&lt; Previous</button>
+                            <h2 id="calendar-month-year">October 2024</h2>
+                            <button class="btn btn-secondary" onclick="nextMonth()">Next &gt;</button>
+                        </div>
+                        <div class="calendar-legend">
+                            <span class="legend-item available">🟢 Available</span>
+                            <span class="legend-item booked">🔵 Booked</span>
+                            <span class="legend-item full">🔴 Full</span>
+                            <span class="legend-item exception">⚠️ Exception</span>
+                        </div>
+                    </div>
+
+                    <div class="calendar-grid">
+                        <div class="calendar-weekdays">
+                            <div class="weekday">Sun</div>
+                            <div class="weekday">Mon</div>
+                            <div class="weekday">Tue</div>
+                            <div class="weekday">Wed</div>
+                            <div class="weekday">Thu</div>
+                            <div class="weekday">Fri</div>
+                            <div class="weekday">Sat</div>
+                        </div>
+                        <div id="calendar-days" class="calendar-days">
+                            <!-- Calendar days will be generated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="session-details">
+                        <h3>Session Management</h3>
+                        <div id="selected-session-info" class="session-info">
+                            <p>Select a day to view session details</p>
+                        </div>
                     </div>
                 </div>
             </div>
