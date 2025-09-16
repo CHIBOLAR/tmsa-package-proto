@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMSA Package Management - Prototype</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Dashboard View (Initial) -->
+        <div id="dashboard" class="view active">
+            <div class="container">
+                <h1>My Training Packages</h1>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="showCreatePackage()">+ New Package</button>
+                    <button class="btn btn-secondary">Calendar View</button>
+                </div>
+
+                <section class="packages-section">
+                    <h2>Active Packages</h2>
+                    <div class="packages-list">
+                        <div class="package-card">
+                            <div class="package-header">
+                                <span class="package-icon">💪</span>
+                                <h3>Strength Training Program</h3>
+                            </div>
+                            <div class="package-details">
+                                Personal (1-1) | Adults | 8 sessions | ₹4,800
+                            </div>
+                            <div class="package-next">
+                                Next: Today 9:00 AM - Sarah J.
+                            </div>
+                            <div class="package-actions">
+                                <button class="btn btn-small">View Calendar</button>
+                                <button class="btn btn-small" onclick="showCopyPackage()">Copy Package</button>
+                                <button class="btn btn-small">Edit</button>
+                            </div>
+                        </div>
+
+                        <div class="package-card">
+                            <div class="package-header">
+                                <span class="package-icon">⚽</span>
+                                <h3>Teen Soccer Skills</h3>
+                            </div>
+                            <div class="package-details">
+                                Group (6-16) | Teens | 12 sessions | ₹1,920 each
+                            </div>
+                            <div class="package-next">
+                                Next: Sat 10:00 AM - 8 booked
+                            </div>
+                            <div class="package-actions">
+                                <button class="btn btn-small">View Calendar</button>
+                                <button class="btn btn-small">Copy Package</button>
+                                <button class="btn btn-small">Edit</button>
+                            </div>
+                        </div>
+
+                        <div class="package-card">
+                            <div class="package-header">
+                                <span class="package-icon">🧘</span>
+                                <h3>Morning Yoga</h3>
+                            </div>
+                            <div class="package-details">
+                                Group (4-8) | All ages | 6 sessions | ₹960 each
+                            </div>
+                            <div class="package-next">
+                                Next: Mon 8:00 AM - 5 booked
+                            </div>
+                            <div class="package-actions">
+                                <button class="btn btn-small">View Calendar</button>
+                                <button class="btn btn-small">Copy Package</button>
+                                <button class="btn btn-small">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="today-sessions">
+                    <h2>Today's Sessions</h2>
+                    <div class="sessions-list">
+                        <div class="session-item">
+                            <span class="session-time">9:00 AM</span>
+                            <span class="session-title">Strength Training - Sarah J.</span>
+                        </div>
+                        <div class="session-item available">
+                            <span class="session-time">11:00 AM</span>
+                            <span class="session-title">Available - Strength Training</span>
+                        </div>
+                        <div class="session-item">
+                            <span class="session-time">3:00 PM</span>
+                            <span class="session-title">Teen Soccer - 8 participants</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Create Package Step 1 -->
+        <div id="create-package-step1" class="view">
+            <div class="container">
+                <div class="wizard-header">
+                    <h1>Create Training Package</h1>
+                    <button class="help-btn">Help ❓</button>
+                </div>
+
+                <form class="package-form">
+                    <div class="form-group">
+                        <label for="packageName">Package Name *</label>
+                        <input type="text" id="packageName" class="form-control" value="Strength Training Program">
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Session Details</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="totalSessions">Total sessions:</label>
+                                <input type="number" id="totalSessions" class="form-control" value="8">
+                            </div>
+                            <div class="form-group">
+                                <label for="duration">Duration *</label>
+                                <select id="duration" class="form-control">
+                                    <option value="30">30 min</option>
+                                    <option value="45">45 min</option>
+                                    <option value="60" selected>60 min</option>
+                                    <option value="90">90 min</option>
+                                    <option value="120">120 min</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="startTime">Start time:</label>
+                                <select id="startTime" class="form-control">
+                                    <option value="9:00">9:00 AM</option>
+                                    <option value="10:00">10:00 AM</option>
+                                    <option value="11:00">11:00 AM</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="location">Location:</label>
+                                <select id="location" class="form-control">
+                                    <option value="outdoor">Outdoor</option>
+                                    <option value="sports-facility">Sports facility</option>
+                                    <option value="client-home" selected>Client's home</option>
+                                    <option value="clinic">Clinic</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Participants</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Capacity:</label>
+                                <div class="capacity-inputs">
+                                    <span>Min</span>
+                                    <input type="number" value="1" class="form-control small">
+                                    <span>Max</span>
+                                    <input type="number" value="1" class="form-control small">
+                                </div>
+                                <div class="training-type">Personal Training (1-on-1)</div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="ageGroup">Age Group:</label>
+                                <select id="ageGroup" class="form-control">
+                                    <option value="kids">Kids (5-12)</option>
+                                    <option value="teens">Teens (13-17)</option>
+                                    <option value="adults" selected>Adults (18+)</option>
+                                    <option value="seniors">Seniors (65+)</option>
+                                    <option value="all">All ages</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="skillLevel">Skill Level:</label>
+                                <select id="skillLevel" class="form-control">
+                                    <option value="beginner">Beginner</option>
+                                    <option value="intermediate">Intermediate</option>
+                                    <option value="advanced">Advanced</option>
+                                    <option value="all" selected>All levels</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Pricing</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="packagePrice">Package price:</label>
+                                <div class="price-input">
+                                    <select class="currency-select">
+                                        <option value="INR">INR</option>
+                                    </select>
+                                    <input type="number" id="packagePrice" class="form-control" value="4800.00" step="0.01">
+                                </div>
+                                <div class="per-session">Per session: ₹600.00 (auto-calculated)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-errors">
+                        <div class="error-message">⚠ Package name is required</div>
+                        <div class="error-message">⚠ Package price is required</div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="showDashboard()">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="showCreatePackageStep2()">Next: Schedule →</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Create Package Step 2 - Schedule -->
+        <div id="create-package-step2" class="view">
+            <div class="container">
+                <div class="wizard-header">
+                    <h1>Package Schedule</h1>
+                    <div class="status-indicator">Checking conflicts...</div>
+                </div>
+
+                <form class="package-form">
+                    <div class="form-group">
+                        <label for="frequency">How often?</label>
+                        <select id="frequency" class="form-control">
+                            <option value="1x">1 time per week</option>
+                            <option value="2x" selected>2 times per week</option>
+                            <option value="3x">3 times per week</option>
+                            <option value="biweekly">Every 2 weeks</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="custom">Custom...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Which days?</label>
+                        <div class="day-selector">
+                            <button type="button" class="day-btn" data-day="mon">M</button>
+                            <button type="button" class="day-btn active" data-day="mon">M</button>
+                            <button type="button" class="day-btn" data-day="tue">T</button>
+                            <button type="button" class="day-btn active" data-day="wed">W</button>
+                            <button type="button" class="day-btn" data-day="thu">T</button>
+                            <button type="button" class="day-btn" data-day="fri">F</button>
+                            <button type="button" class="day-btn" data-day="sat">S</button>
+                            <button type="button" class="day-btn" data-day="sun">S</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="startDate">Start date:</label>
+                        <input type="date" id="startDate" class="form-control" value="2025-10-14">
+                    </div>
+
+                    <div class="conflict-status">
+                        <div class="status-success">✓ No conflicts detected</div>
+                        <div class="schedule-summary">→ 8 sessions over 4 weeks (ends Nov 8, 2025)</div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="showCreatePackageStep1()">← Back</button>
+                        <button type="button" class="btn btn-primary" onclick="showCreatePackageStep3()">Next: Settings →</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Create Package Step 3 - Settings -->
+        <div id="create-package-step3" class="view">
+            <div class="container">
+                <div class="wizard-header">
+                    <h1>Package Settings</h1>
+                </div>
+
+                <form class="package-form">
+                    <div class="form-section">
+                        <h3>Buffer Time (Calendar Blocking)</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="bufferBefore">Before session:</label>
+                                <select id="bufferBefore" class="form-control">
+                                    <option value="0">None</option>
+                                    <option value="15" selected>15 minutes</option>
+                                    <option value="30">30 minutes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="bufferAfter">After session:</label>
+                                <select id="bufferAfter" class="form-control">
+                                    <option value="0">None</option>
+                                    <option value="15" selected>15 minutes</option>
+                                    <option value="30">30 minutes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="buffer-time-display">
+                            Total blocked time: 8:45 AM - 10:15 AM
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Resources</h3>
+                        <div class="form-group">
+                            <label for="equipment">Equipment:</label>
+                            <input type="text" id="equipment" class="form-control" value="Dumbbells, resistance bands, mat">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Description</h3>
+                        <div class="form-group">
+                            <textarea id="description" class="form-control" rows="4">8-week strength training program for building functional strength and muscle endurance. Perfect for beginners to intermediate levels. All equipment provided.</textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="showCreatePackageStep2()">← Back</button>
+                        <button type="button" class="btn btn-primary" onclick="showPackageCreated()">Create Package</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Package Created Success -->
+        <div id="package-created" class="view">
+            <div class="container">
+                <div class="success-header">
+                    <h1>Package Created Successfully! ✓</h1>
+                </div>
+
+                <div class="success-details">
+                    <h2>Strength Training Program</h2>
+                    <div class="package-id">ID: STR-2025-001</div>
+
+                    <div class="success-items">
+                        <div class="success-item">✓ 8 sessions scheduled</div>
+                        <div class="success-item">✓ Booking page created</div>
+                        <div class="success-item">✓ Pricing: ₹4,800 package (₹600 per session)</div>
+                    </div>
+
+                    <div class="booking-link-section">
+                        <label>Booking Link:</label>
+                        <div class="booking-link">
+                            <input type="text" value="https://tmsa.app/book/str-2025-001" readonly class="form-control">
+                            <button class="btn btn-small">Copy Link</button>
+                            <button class="btn btn-small">Email to Client</button>
+                        </div>
+                    </div>
+
+                    <div class="success-actions">
+                        <button class="btn btn-secondary" onclick="showCalendar()">View Calendar</button>
+                        <button class="btn btn-secondary" onclick="showCreatePackage()">Create Another</button>
+                        <button class="btn btn-primary" onclick="showDashboard()">Go to Dashboard</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar View -->
+        <div id="calendar-view" class="view">
+            <div class="container">
+                <div class="calendar-header">
+                    <h1>Package Calendar: Strength Training Program</h1>
+                    <div class="calendar-actions">
+                        <button class="btn btn-secondary" onclick="showSessionsList()">View Sessions</button>
+                        <button class="btn btn-secondary" onclick="showCopyPackage()">Copy Package</button>
+                        <button class="btn btn-secondary">Edit Package</button>
+                    </div>
+                </div>
+
+                <div class="calendar-container">
+                    <div class="calendar-month">
+                        <h3>October 2025</h3>
+                        <div class="calendar-grid">
+                            <div class="calendar-header-row">
+                                <div class="calendar-day-header">Su</div>
+                                <div class="calendar-day-header">Mo</div>
+                                <div class="calendar-day-header">Tu</div>
+                                <div class="calendar-day-header">We</div>
+                                <div class="calendar-day-header">Th</div>
+                                <div class="calendar-day-header">Fr</div>
+                                <div class="calendar-day-header">Sa</div>
+                            </div>
+                            <div class="calendar-row">
+                                <div class="calendar-day"></div>
+                                <div class="calendar-day"></div>
+                                <div class="calendar-day"></div>
+                                <div class="calendar-day">1</div>
+                                <div class="calendar-day">2</div>
+                                <div class="calendar-day">3</div>
+                                <div class="calendar-day">4</div>
+                            </div>
+                            <div class="calendar-row">
+                                <div class="calendar-day">5</div>
+                                <div class="calendar-day">6</div>
+                                <div class="calendar-day">7</div>
+                                <div class="calendar-day">8</div>
+                                <div class="calendar-day">9</div>
+                                <div class="calendar-day">10</div>
+                                <div class="calendar-day">11</div>
+                            </div>
+                            <div class="calendar-row">
+                                <div class="calendar-day">12</div>
+                                <div class="calendar-day">13</div>
+                                <div class="calendar-day session-day" onclick="showSessionEdit(1)">
+                                    <span class="day-number">14</span>
+                                    <span class="session-indicator">1</span>
+                                </div>
+                                <div class="calendar-day">15</div>
+                                <div class="calendar-day session-day" onclick="showSessionEdit(2)">
+                                    <span class="day-number">16</span>
+                                    <span class="session-indicator">2</span>
+                                </div>
+                                <div class="calendar-day">17</div>
+                                <div class="calendar-day">18</div>
+                            </div>
+                            <div class="calendar-row">
+                                <div class="calendar-day">19</div>
+                                <div class="calendar-day session-day" onclick="showSessionEdit(3)">
+                                    <span class="day-number">20</span>
+                                    <span class="session-indicator">3</span>
+                                </div>
+                                <div class="calendar-day">21</div>
+                                <div class="calendar-day session-day" onclick="showSessionEdit(4)">
+                                    <span class="day-number">22</span>
+                                    <span class="session-indicator">4</span>
+                                </div>
+                                <div class="calendar-day">23</div>
+                                <div class="calendar-day">24</div>
+                                <div class="calendar-day">25</div>
+                            </div>
+                            <div class="calendar-row">
+                                <div class="calendar-day">26</div>
+                                <div class="calendar-day session-day" onclick="showSessionEdit(5)">
+                                    <span class="day-number">27</span>
+                                    <span class="session-indicator">5</span>
+                                </div>
+                                <div class="calendar-day">28</div>
+                                <div class="calendar-day session-day" onclick="showSessionEdit(6)">
+                                    <span class="day-number">29</span>
+                                    <span class="session-indicator">6</span>
+                                </div>
+                                <div class="calendar-day">30</div>
+                                <div class="calendar-day">31</div>
+                                <div class="calendar-day"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="calendar-month">
+                        <h3>November 2025</h3>
+                        <div class="calendar-grid">
+                            <div class="calendar-header-row">
+                                <div class="calendar-day-header">Su</div>
+                                <div class="calendar-day-header">Mo</div>
+                                <div class="calendar-day-header">Tu</div>
+                                <div class="calendar-day-header">We</div>
+                                <div class="calendar-day-header">Th</div>
+                                <div class="calendar-day-header">Fr</div>
+                                <div class="calendar-day-header">Sa</div>
+                            </div>
+                            <div class="calendar-row">
+                                <div class="calendar-day"></div>
+                                <div class="calendar-day"></div>
+                                <div class="calendar-day"></div>
+                                <div class="calendar-day"></div>
+                                <div class="calendar-day"></div>
+                                <div class="calendar-day"></div>
+                                <div class="calendar-day">1</div>
+                            </div>
+                            <div class="calendar-row">
+                                <div class="calendar-day">2</div>
+                                <div class="calendar-day session-day" onclick="showSessionEdit(7)">
+                                    <span class="day-number">3</span>
+                                    <span class="session-indicator">7</span>
+                                </div>
+                                <div class="calendar-day">4</div>
+                                <div class="calendar-day session-day" onclick="showSessionEdit(8)">
+                                    <span class="day-number">5</span>
+                                    <span class="session-indicator">8</span>
+                                </div>
+                                <div class="calendar-day">6</div>
+                                <div class="calendar-day">7</div>
+                                <div class="calendar-day">8</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calendar-legend">
+                    <div class="legend-item">
+                        <span class="legend-session">●</span> = Session scheduled
+                    </div>
+                    <div class="legend-item">
+                        Number = Session number
+                    </div>
+                </div>
+
+                <div class="back-button">
+                    <button class="btn btn-secondary" onclick="showDashboard()">← Back to Dashboard</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sessions List View -->
+        <div id="sessions-list" class="view">
+            <div class="container">
+                <div class="sessions-header">
+                    <h1>Session List: Strength Training Program</h1>
+                    <button class="btn btn-secondary" onclick="showCalendar()">← Back to Calendar</button>
+                </div>
+
+                <div class="sessions-container">
+                    <div class="session-card">
+                        <div class="session-info">
+                            <h3>Session 1: Oct 14 (Mon) 9:00-10:00 AM</h3>
+                            <div class="session-status available">Status: Available (0/1 booked)</div>
+                        </div>
+                        <div class="session-actions">
+                            <button class="btn btn-small" onclick="showSessionEdit(1)">Edit</button>
+                            <button class="btn btn-small btn-danger" onclick="showSessionCancel(1)">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div class="session-card">
+                        <div class="session-info">
+                            <h3>Session 2: Oct 16 (Wed) 9:00-10:00 AM</h3>
+                            <div class="session-status booked">Status: Booked (1/1 - Sarah J.)</div>
+                        </div>
+                        <div class="session-actions">
+                            <button class="btn btn-small" onclick="showSessionEdit(2)">Edit</button>
+                            <button class="btn btn-small btn-danger" onclick="showSessionCancel(2)">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div class="session-card">
+                        <div class="session-info">
+                            <h3>Session 3: Oct 20 (Mon) 9:00-10:00 AM</h3>
+                            <div class="session-status available">Status: Available (0/1 booked)</div>
+                        </div>
+                        <div class="session-actions">
+                            <button class="btn btn-small" onclick="showSessionEdit(3)">Edit</button>
+                            <button class="btn btn-small btn-danger" onclick="showSessionCancel(3)">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div class="session-card">
+                        <div class="session-info">
+                            <h3>Session 4: Oct 22 (Wed) 9:00-10:00 AM</h3>
+                            <div class="session-status available">Status: Available (0/1 booked)</div>
+                        </div>
+                        <div class="session-actions">
+                            <button class="btn btn-small" onclick="showSessionEdit(4)">Edit</button>
+                            <button class="btn btn-small btn-danger" onclick="showSessionCancel(4)">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div class="session-expandable">
+                        <button class="btn btn-secondary expand-btn" onclick="toggleAllSessions()">Show All 8 Sessions...</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session Edit Modal -->
+        <div id="session-edit-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="edit-session-title">Edit Session: October 23, 2025 (Session 4/8)</h2>
+                    <button class="modal-close" onclick="hideSessionEdit()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="current-session-info">
+                        <strong>Current:</strong> Wed Oct 23, 9:00-10:00 AM at Client's home<br>
+                        <strong>Status:</strong> Available (0/1 booked)
+                    </div>
+
+                    <div class="form-group">
+                        <label>Override Settings:</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="overrideType" value="keep" checked>
+                                Keep original settings
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="overrideType" value="override">
+                                Override this session only:
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="override-fields" class="override-fields" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editDate">Date:</label>
+                                <input type="date" id="editDate" class="form-control" value="2025-10-24">
+                            </div>
+                            <div class="form-group">
+                                <label for="editTime">Time:</label>
+                                <select id="editTime" class="form-control">
+                                    <option value="14:00" selected>2:00 PM</option>
+                                    <option value="15:00">3:00 PM</option>
+                                    <option value="16:00">4:00 PM</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editLocation">Location:</label>
+                                <select id="editLocation" class="form-control">
+                                    <option value="outdoor">Outdoor</option>
+                                    <option value="sports-facility" selected>Sports facility</option>
+                                    <option value="client-home">Client's home</option>
+                                    <option value="clinic">Clinic</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Duration:</label>
+                                <div class="duration-display">60 minutes (cannot change)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="conflict-check">
+                        <div class="status-success">✓ No conflicts for Oct 24, 2:00 PM</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="hideSessionEdit()">Cancel</button>
+                    <button class="btn btn-primary" onclick="saveSessionChanges()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session Cancel Modal -->
+        <div id="session-cancel-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Cancel Session: October 23, 2025</h2>
+                    <button class="modal-close" onclick="hideSessionCancel()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="session-cancel-info">
+                        <strong>Session:</strong> Wed Oct 23, 9:00-10:00 AM<br>
+                        <strong>Booked:</strong> <span id="cancel-client-name">Sarah Johnson</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cancelReason">Cancellation Reason:</label>
+                        <input type="text" id="cancelReason" class="form-control" value="Personal emergency">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Action:</label>
+                        <div class="checkbox-list">
+                            <label><input type="checkbox" checked> Email client about cancellation</label>
+                            <label><input type="checkbox" checked> Send calendar cancellation</label>
+                            <label><input type="checkbox" checked> Make session available for rebooking</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="clientMessage">Message to Client:</label>
+                        <textarea id="clientMessage" class="form-control" rows="4">Hi Sarah, I need to cancel tomorrow's session due to a personal emergency. You can rebook this session anytime using your booking link. Sorry for the inconvenience!</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="hideSessionCancel()">Keep Session</button>
+                    <button class="btn btn-danger" onclick="confirmCancelSession()">Cancel & Notify</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Copy Package Modal -->
+        <div id="copy-package-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Copy Package: Strength Training Program</h2>
+                    <button class="modal-close" onclick="hideCopyPackage()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Create a new package with the same structure</p>
+                    
+                    <div class="form-group">
+                        <label for="newPackageName">New Package Name:</label>
+                        <input type="text" id="newPackageName" class="form-control" value="Advanced Strength Training">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Copy Settings:</label>
+                        <div class="checkbox-list">
+                            <label><input type="checkbox" checked> Session count (8 sessions)</label>
+                            <label><input type="checkbox" checked> Duration and time (60 min, 9:00 AM)</label>
+                            <label><input type="checkbox" checked> Participant settings (1-1, Adults)</label>
+                            <label><input type="checkbox" checked> Location and equipment</label>
+                            <label><input type="checkbox" checked> Pricing (₹4,800 package)</label>
+                            <label><input type="checkbox" checked> Description text</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>New Schedule:</label>
+                        <div class="schedule-info">
+                            <input type="date" class="form-control" value="2025-12-01">
+                            <span>Same pattern: Mon/Wed 9:00 AM</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="hideCopyPackage()">Cancel</button>
+                    <button class="btn btn-primary" onclick="createCopy()">Create Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
