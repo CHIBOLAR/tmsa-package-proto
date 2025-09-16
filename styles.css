@@ -702,6 +702,53 @@ label {
     margin-top: 1rem;
 }
 
+/* Updated Package Features */
+.duration-options {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #3498db;
+}
+
+.capacity-section {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #e8f5e8;
+    border-radius: 6px;
+    border-left: 4px solid #27ae60;
+}
+
+.schedule-option {
+    margin-top: 1rem;
+}
+
+.schedule-note {
+    color: #6c757d;
+    font-style: italic;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.batch-note {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.batch-note small {
+    color: #6c757d;
+}
+
+.batch-status {
+    color: #27ae60;
+    font-size: 0.9rem;
+    min-width: 120px;
+}
+
+.time-select {
+    min-width: 120px;
+}
+
 /* New Package Features */
 .sessions-preview {
     margin-top: 1rem;

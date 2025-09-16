@@ -111,49 +111,82 @@
                     </div>
 
                     <div class="form-section">
-                        <h3>Package Duration</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="packageDuration">Package Duration *</label>
-                                <select id="packageDuration" class="form-control">
-                                    <option value="4-weeks">4 weeks</option>
-                                    <option value="6-weeks">6 weeks</option>
-                                    <option value="8-weeks" selected>8 weeks</option>
-                                    <option value="12-weeks">12 weeks</option>
-                                    <option value="16-weeks">16 weeks</option>
-                                    <option value="custom">Custom duration...</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="sessionDuration">Session Duration *</label>
-                                <select id="sessionDuration" class="form-control">
-                                    <option value="30">30 minutes</option>
-                                    <option value="45">45 minutes</option>
-                                    <option value="60" selected>60 minutes</option>
-                                    <option value="90">90 minutes</option>
-                                    <option value="120">2 hours</option>
-                                </select>
+                        <h3>Package Type</h3>
+                        <div class="form-group">
+                            <label>Package Structure *</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="packageType" value="ongoing" checked>
+                                    Ongoing Package (starts when someone joins, continuous sessions)
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="packageType" value="fixed">
+                                    Fixed Duration Package (set start/end dates)
+                                </label>
                             </div>
                         </div>
-                        <div class="sessions-preview">
-                            <div class="sessions-count">Total sessions will be calculated based on your schedule</div>
+                        
+                        <div id="fixed-duration-options" class="duration-options" style="display: none;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="packageDuration">Duration</label>
+                                    <select id="packageDuration" class="form-control">
+                                        <option value="4">4 weeks</option>
+                                        <option value="6">6 weeks</option>
+                                        <option value="8" selected>8 weeks</option>
+                                        <option value="12">12 weeks</option>
+                                        <option value="16">16 weeks</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="packageStartDate">Fixed Start Date</label>
+                                    <input type="date" id="packageStartDate" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="sessionDuration">Session Duration *</label>
+                            <select id="sessionDuration" class="form-control">
+                                <option value="30">30 minutes</option>
+                                <option value="45">45 minutes</option>
+                                <option value="60" selected>60 minutes</option>
+                                <option value="90">90 minutes</option>
+                                <option value="120">2 hours</option>
+                            </select>
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <h3>Participant Requirements</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Capacity Limits:</label>
-                                <div class="capacity-inputs">
-                                    <span>Minimum to run:</span>
-                                    <input type="number" id="minCapacity" value="2" class="form-control small" min="1">
-                                    <span>Maximum capacity:</span>
-                                    <input type="number" id="maxCapacity" value="8" class="form-control small" min="1">
-                                </div>
-                                <div class="capacity-warning">⚠️ Package will be cancelled if minimum not met by start date</div>
+                        <h3>Booking Type</h3>
+                        <div class="form-group">
+                            <label>Training Type *</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="bookingType" value="personal" checked>
+                                    Personal Training (1-on-1)
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="bookingType" value="group">
+                                    Group Training
+                                </label>
                             </div>
                         </div>
+                        
+                        <div id="group-capacity" class="capacity-section" style="display: none;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Group Capacity:</label>
+                                    <div class="capacity-inputs">
+                                        <span>Minimum:</span>
+                                        <input type="number" id="minCapacity" value="3" class="form-control small" min="2">
+                                        <span>Maximum:</span>
+                                        <input type="number" id="maxCapacity" value="8" class="form-control small" min="2">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="ageGroup">Age Group:</label>
@@ -174,12 +207,6 @@
                                     <option value="all" selected>All levels</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label>
-                                <input type="checkbox" id="allowMidJoin" checked>
-                                Allow participants to join after package starts (pro-rated pricing)
-                            </label>
                         </div>
                     </div>
 
@@ -248,59 +275,88 @@
                     <div class="form-section">
                         <h3>Schedule Pattern</h3>
                         <div class="form-group">
-                            <label for="frequency">How often?</label>
-                            <select id="frequency" class="form-control">
-                                <option value="1x">1 time per week</option>
-                                <option value="2x" selected>2 times per week</option>
-                                <option value="3x">3 times per week</option>
-                                <option value="custom">Custom pattern...</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Which days?</label>
-                            <div class="day-selector">
-                                <button type="button" class="day-btn active" data-day="mon">Mon</button>
-                                <button type="button" class="day-btn" data-day="tue">Tue</button>
-                                <button type="button" class="day-btn active" data-day="wed">Wed</button>
-                                <button type="button" class="day-btn" data-day="thu">Thu</button>
-                                <button type="button" class="day-btn" data-day="fri">Fri</button>
-                                <button type="button" class="day-btn" data-day="sat">Sat</button>
-                                <button type="button" class="day-btn" data-day="sun">Sun</button>
+                            <label>Schedule Type *</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="scheduleType" value="days" checked>
+                                    Select specific days of the week
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="scheduleType" value="sessions">
+                                    Set number of sessions per week
+                                </label>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="startDate">Package start date:</label>
-                            <input type="date" id="startDate" class="form-control" value="2025-10-14">
+                        <div id="days-schedule" class="schedule-option">
+                            <div class="form-group">
+                                <label>Training Days:</label>
+                                <div class="day-selector">
+                                    <button type="button" class="day-btn active" data-day="mon">Mon</button>
+                                    <button type="button" class="day-btn" data-day="tue">Tue</button>
+                                    <button type="button" class="day-btn active" data-day="wed">Wed</button>
+                                    <button type="button" class="day-btn" data-day="thu">Thu</button>
+                                    <button type="button" class="day-btn" data-day="fri">Fri</button>
+                                    <button type="button" class="day-btn" data-day="sat">Sat</button>
+                                    <button type="button" class="day-btn" data-day="sun">Sun</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="sessions-schedule" class="schedule-option" style="display: none;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="sessionsPerWeek">Sessions per week:</label>
+                                    <select id="sessionsPerWeek" class="form-control">
+                                        <option value="1">1 session</option>
+                                        <option value="2" selected>2 sessions</option>
+                                        <option value="3">3 sessions</option>
+                                        <option value="4">4 sessions</option>
+                                        <option value="5">5 sessions</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Trainer will schedule specific days</label>
+                                    <div class="schedule-note">Days will be arranged based on trainer and participant availability</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div class="batches-section">
-                        <h3>Time Batches</h3>
-                        <p>Create different time slots for participants to choose from</p>
+                        <h3>Available Time Slots</h3>
+                        <p>Add time slots when this training is available</p>
                         <div class="batches-list">
                             <div class="batch-item">
-                                <select class="form-control">
-                                    <option value="9:00">9:00 AM</option>
+                                <select class="form-control time-select">
+                                    <option value="6:00">6:00 AM</option>
+                                    <option value="7:00">7:00 AM</option>
+                                    <option value="8:00">8:00 AM</option>
+                                    <option value="9:00" selected>9:00 AM</option>
                                     <option value="10:00">10:00 AM</option>
                                     <option value="11:00">11:00 AM</option>
+                                    <option value="14:00">2:00 PM</option>
+                                    <option value="15:00">3:00 PM</option>
+                                    <option value="16:00">4:00 PM</option>
                                     <option value="17:00">5:00 PM</option>
                                     <option value="18:00">6:00 PM</option>
                                     <option value="19:00">7:00 PM</option>
+                                    <option value="20:00">8:00 PM</option>
                                 </select>
-                                <span class="batch-capacity">0/8 enrolled</span>
-                                <button type="button" class="btn btn-small btn-danger">Remove</button>
+                                <span class="batch-status" id="batch-status-0">Available for booking</span>
+                                <button type="button" class="btn btn-small btn-danger" onclick="removeBatch(this)">Remove</button>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-secondary" onclick="addBatch()">+ Add Time Batch</button>
+                        <button type="button" class="btn btn-secondary" onclick="addBatch()">+ Add Time Slot</button>
+                        <div class="batch-note">
+                            <small>💡 For group training, each time slot can have multiple participants up to capacity limit</small>
+                        </div>
                     </div>
 
                     <div class="schedule-preview">
-                        <div class="schedule-summary">
+                        <div class="schedule-summary" id="schedule-summary">
                             <strong>Schedule Preview:</strong><br>
-                            16 sessions over 8 weeks (ends Dec 6, 2025)<br>
-                            2 sessions per week on Monday & Wednesday
+                            <span id="preview-text">Training available Monday & Wednesday at selected time slots</span>
                         </div>
                     </div>
 
@@ -366,13 +422,6 @@
                             <label for="description">Public Description:</label>
                             <textarea id="description" class="form-control" rows="4" placeholder="Description that participants will see when booking">8-week strength training program designed to build functional strength and muscle endurance. Perfect for beginners to intermediate levels. All equipment provided. Small group setting with personalized attention.</textarea>
                         </div>
-                        <div class="form-group">
-                            <label for="objectives">Learning Objectives:</label>
-                            <textarea id="objectives" class="form-control" rows="3" placeholder="What will participants achieve by the end?">- Master fundamental strength training movements
-- Build a sustainable workout routine
-- Increase overall strength and endurance
-- Learn proper form and safety techniques</textarea>
-                        </div>
                     </div>
 
                     <div class="form-actions">
@@ -395,11 +444,11 @@
                     <div class="package-id">ID: STR-2025-001</div>
 
                     <div class="success-items">
-                        <div class="success-item">✓ 16 sessions scheduled (8 weeks × 2 per week)</div>
-                        <div class="success-item">✓ 2 time batches created</div>
-                        <div class="success-item">✓ Booking page created with mid-join option</div>
-                        <div class="success-item">✓ Minimum 2 participants required to run</div>
-                        <div class="success-item">✓ Pricing: ₹4,800 package (₹300 per session)</div>
+                        <div class="success-item">✓ Package created successfully</div>
+                        <div class="success-item">✓ Multiple time slots available</div>
+                        <div class="success-item">✓ Booking page is now live</div>
+                        <div class="success-item">✓ Training starts when first participant joins</div>
+                        <div class="success-item">✓ Package pricing: ₹4,800</div>
                     </div>
 
                     <div class="booking-link-section">
