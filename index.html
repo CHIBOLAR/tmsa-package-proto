@@ -111,56 +111,47 @@
                     </div>
 
                     <div class="form-section">
-                        <h3>Session Details</h3>
+                        <h3>Package Duration</h3>
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="totalSessions">Total sessions:</label>
-                                <input type="number" id="totalSessions" class="form-control" value="8">
+                                <label for="packageDuration">Package Duration *</label>
+                                <select id="packageDuration" class="form-control">
+                                    <option value="4-weeks">4 weeks</option>
+                                    <option value="6-weeks">6 weeks</option>
+                                    <option value="8-weeks" selected>8 weeks</option>
+                                    <option value="12-weeks">12 weeks</option>
+                                    <option value="16-weeks">16 weeks</option>
+                                    <option value="custom">Custom duration...</option>
+                                </select>
                             </div>
                             <div class="form-group">
-                                <label for="duration">Duration *</label>
-                                <select id="duration" class="form-control">
-                                    <option value="30">30 min</option>
-                                    <option value="45">45 min</option>
-                                    <option value="60" selected>60 min</option>
-                                    <option value="90">90 min</option>
-                                    <option value="120">120 min</option>
+                                <label for="sessionDuration">Session Duration *</label>
+                                <select id="sessionDuration" class="form-control">
+                                    <option value="30">30 minutes</option>
+                                    <option value="45">45 minutes</option>
+                                    <option value="60" selected>60 minutes</option>
+                                    <option value="90">90 minutes</option>
+                                    <option value="120">2 hours</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="startTime">Start time:</label>
-                                <select id="startTime" class="form-control">
-                                    <option value="9:00">9:00 AM</option>
-                                    <option value="10:00">10:00 AM</option>
-                                    <option value="11:00">11:00 AM</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="location">Location:</label>
-                                <select id="location" class="form-control">
-                                    <option value="outdoor">Outdoor</option>
-                                    <option value="sports-facility">Sports facility</option>
-                                    <option value="client-home" selected>Client's home</option>
-                                    <option value="clinic">Clinic</option>
-                                </select>
-                            </div>
+                        <div class="sessions-preview">
+                            <div class="sessions-count">Total sessions will be calculated based on your schedule</div>
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <h3>Participants</h3>
+                        <h3>Participant Requirements</h3>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Capacity:</label>
+                                <label>Capacity Limits:</label>
                                 <div class="capacity-inputs">
-                                    <span>Min</span>
-                                    <input type="number" value="1" class="form-control small">
-                                    <span>Max</span>
-                                    <input type="number" value="1" class="form-control small">
+                                    <span>Minimum to run:</span>
+                                    <input type="number" id="minCapacity" value="2" class="form-control small" min="1">
+                                    <span>Maximum capacity:</span>
+                                    <input type="number" id="maxCapacity" value="8" class="form-control small" min="1">
                                 </div>
-                                <div class="training-type">Personal Training (1-on-1)</div>
+                                <div class="capacity-warning">⚠️ Package will be cancelled if minimum not met by start date</div>
                             </div>
                         </div>
                         <div class="form-row">
@@ -183,6 +174,12 @@
                                     <option value="all" selected>All levels</option>
                                 </select>
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="allowMidJoin" checked>
+                                Allow participants to join after package starts (pro-rated pricing)
+                            </label>
                         </div>
                     </div>
 
@@ -215,104 +212,166 @@
             </div>
         </div>
 
-        <!-- Create Package Step 2 - Schedule -->
+        <!-- Create Package Step 2 - Location & Schedule -->
         <div id="create-package-step2" class="view">
             <div class="container">
                 <div class="wizard-header">
-                    <h1>Package Schedule</h1>
-                    <div class="status-indicator">Checking conflicts...</div>
+                    <h1>Location & Schedule</h1>
+                    <div class="status-indicator">Calculating sessions...</div>
                 </div>
 
                 <form class="package-form">
-                    <div class="form-group">
-                        <label for="frequency">How often?</label>
-                        <select id="frequency" class="form-control">
-                            <option value="1x">1 time per week</option>
-                            <option value="2x" selected>2 times per week</option>
-                            <option value="3x">3 times per week</option>
-                            <option value="biweekly">Every 2 weeks</option>
-                            <option value="monthly">Monthly</option>
-                            <option value="custom">Custom...</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Which days?</label>
-                        <div class="day-selector">
-                            <button type="button" class="day-btn" data-day="mon">M</button>
-                            <button type="button" class="day-btn active" data-day="mon">M</button>
-                            <button type="button" class="day-btn" data-day="tue">T</button>
-                            <button type="button" class="day-btn active" data-day="wed">W</button>
-                            <button type="button" class="day-btn" data-day="thu">T</button>
-                            <button type="button" class="day-btn" data-day="fri">F</button>
-                            <button type="button" class="day-btn" data-day="sat">S</button>
-                            <button type="button" class="day-btn" data-day="sun">S</button>
+                    <div class="form-section">
+                        <h3>Location Details</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="locationType">Location Type *</label>
+                                <select id="locationType" class="form-control">
+                                    <option value="fixed">Fixed Location</option>
+                                    <option value="multiple" selected>Multiple Locations</option>
+                                    <option value="client-specific">Client-Specific</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="location-details">
+                            <div class="location-list">
+                                <div class="location-item">
+                                    <input type="text" placeholder="Location name (e.g., Central Park)" class="form-control">
+                                    <input type="text" placeholder="Full address" class="form-control">
+                                    <button type="button" class="btn btn-small btn-danger">Remove</button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-secondary" onclick="addLocation()">+ Add Location</button>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="startDate">Start date:</label>
-                        <input type="date" id="startDate" class="form-control" value="2025-10-14">
+                    <div class="form-section">
+                        <h3>Schedule Pattern</h3>
+                        <div class="form-group">
+                            <label for="frequency">How often?</label>
+                            <select id="frequency" class="form-control">
+                                <option value="1x">1 time per week</option>
+                                <option value="2x" selected>2 times per week</option>
+                                <option value="3x">3 times per week</option>
+                                <option value="custom">Custom pattern...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Which days?</label>
+                            <div class="day-selector">
+                                <button type="button" class="day-btn active" data-day="mon">Mon</button>
+                                <button type="button" class="day-btn" data-day="tue">Tue</button>
+                                <button type="button" class="day-btn active" data-day="wed">Wed</button>
+                                <button type="button" class="day-btn" data-day="thu">Thu</button>
+                                <button type="button" class="day-btn" data-day="fri">Fri</button>
+                                <button type="button" class="day-btn" data-day="sat">Sat</button>
+                                <button type="button" class="day-btn" data-day="sun">Sun</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="startDate">Package start date:</label>
+                            <input type="date" id="startDate" class="form-control" value="2025-10-14">
+                        </div>
                     </div>
 
-                    <div class="conflict-status">
-                        <div class="status-success">✓ No conflicts detected</div>
-                        <div class="schedule-summary">→ 8 sessions over 4 weeks (ends Nov 8, 2025)</div>
+                    <div class="batches-section">
+                        <h3>Time Batches</h3>
+                        <p>Create different time slots for participants to choose from</p>
+                        <div class="batches-list">
+                            <div class="batch-item">
+                                <select class="form-control">
+                                    <option value="9:00">9:00 AM</option>
+                                    <option value="10:00">10:00 AM</option>
+                                    <option value="11:00">11:00 AM</option>
+                                    <option value="17:00">5:00 PM</option>
+                                    <option value="18:00">6:00 PM</option>
+                                    <option value="19:00">7:00 PM</option>
+                                </select>
+                                <span class="batch-capacity">0/8 enrolled</span>
+                                <button type="button" class="btn btn-small btn-danger">Remove</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="addBatch()">+ Add Time Batch</button>
+                    </div>
+
+                    <div class="schedule-preview">
+                        <div class="schedule-summary">
+                            <strong>Schedule Preview:</strong><br>
+                            16 sessions over 8 weeks (ends Dec 6, 2025)<br>
+                            2 sessions per week on Monday & Wednesday
+                        </div>
                     </div>
 
                     <div class="form-actions">
                         <button type="button" class="btn btn-secondary" onclick="showCreatePackageStep1()">← Back</button>
-                        <button type="button" class="btn btn-primary" onclick="showCreatePackageStep3()">Next: Settings →</button>
+                        <button type="button" class="btn btn-primary" onclick="showCreatePackageStep3()">Next: Details →</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Create Package Step 3 - Settings -->
+        <!-- Create Package Step 3 - Details & Exceptions -->
         <div id="create-package-step3" class="view">
             <div class="container">
                 <div class="wizard-header">
-                    <h1>Package Settings</h1>
+                    <h1>Package Details & Exceptions</h1>
                 </div>
 
                 <form class="package-form">
                     <div class="form-section">
-                        <h3>Buffer Time (Calendar Blocking)</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="bufferBefore">Before session:</label>
-                                <select id="bufferBefore" class="form-control">
-                                    <option value="0">None</option>
-                                    <option value="15" selected>15 minutes</option>
-                                    <option value="30">30 minutes</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="bufferAfter">After session:</label>
-                                <select id="bufferAfter" class="form-control">
-                                    <option value="0">None</option>
-                                    <option value="15" selected>15 minutes</option>
-                                    <option value="30">30 minutes</option>
-                                </select>
-                            </div>
+                        <h3>Schedule Exceptions</h3>
+                        <p>Add dates when regular sessions won't happen</p>
+                        <div class="exceptions-list">
+                            <!-- Exceptions will be added dynamically -->
                         </div>
-                        <div class="buffer-time-display">
-                            Total blocked time: 8:45 AM - 10:15 AM
+                        <div class="add-exception">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="exceptionDate">Exception Date:</label>
+                                    <input type="date" id="exceptionDate" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exceptionReason">Reason:</label>
+                                    <select id="exceptionReason" class="form-control">
+                                        <option value="holiday">Public Holiday</option>
+                                        <option value="trainer-unavailable">Trainer Unavailable</option>
+                                        <option value="venue-unavailable">Venue Unavailable</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-secondary" onclick="addException()">Add Exception</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <h3>Resources</h3>
+                        <h3>Package Resources</h3>
                         <div class="form-group">
-                            <label for="equipment">Equipment:</label>
-                            <input type="text" id="equipment" class="form-control" value="Dumbbells, resistance bands, mat">
+                            <label for="equipment">Required Equipment:</label>
+                            <textarea id="equipment" class="form-control" rows="2" placeholder="List all equipment needed (e.g., dumbbells, resistance bands, yoga mats)">Dumbbells, resistance bands, yoga mats</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="prerequisites">Prerequisites:</label>
+                            <textarea id="prerequisites" class="form-control" rows="2" placeholder="Any requirements or previous experience needed">No prior experience required</textarea>
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <h3>Description</h3>
+                        <h3>Package Description</h3>
                         <div class="form-group">
-                            <textarea id="description" class="form-control" rows="4">8-week strength training program for building functional strength and muscle endurance. Perfect for beginners to intermediate levels. All equipment provided.</textarea>
+                            <label for="description">Public Description:</label>
+                            <textarea id="description" class="form-control" rows="4" placeholder="Description that participants will see when booking">8-week strength training program designed to build functional strength and muscle endurance. Perfect for beginners to intermediate levels. All equipment provided. Small group setting with personalized attention.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="objectives">Learning Objectives:</label>
+                            <textarea id="objectives" class="form-control" rows="3" placeholder="What will participants achieve by the end?">- Master fundamental strength training movements
+- Build a sustainable workout routine
+- Increase overall strength and endurance
+- Learn proper form and safety techniques</textarea>
                         </div>
                     </div>
 
@@ -336,9 +395,11 @@
                     <div class="package-id">ID: STR-2025-001</div>
 
                     <div class="success-items">
-                        <div class="success-item">✓ 8 sessions scheduled</div>
-                        <div class="success-item">✓ Booking page created</div>
-                        <div class="success-item">✓ Pricing: ₹4,800 package (₹600 per session)</div>
+                        <div class="success-item">✓ 16 sessions scheduled (8 weeks × 2 per week)</div>
+                        <div class="success-item">✓ 2 time batches created</div>
+                        <div class="success-item">✓ Booking page created with mid-join option</div>
+                        <div class="success-item">✓ Minimum 2 participants required to run</div>
+                        <div class="success-item">✓ Pricing: ₹4,800 package (₹300 per session)</div>
                     </div>
 
                     <div class="booking-link-section">
@@ -670,6 +731,69 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary" onclick="hideSessionCancel()">Keep Session</button>
                     <button class="btn btn-danger" onclick="confirmCancelSession()">Cancel & Notify</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Recurrence Modal -->
+        <div id="custom-recurrence-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Custom Recurrence Pattern</h2>
+                    <button class="modal-close" onclick="hideCustomRecurrence()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Repeat every</label>
+                        <div class="repeat-controls">
+                            <input type="number" id="repeatEvery" class="form-control small" value="1" min="1">
+                            <select id="repeatUnit" class="form-control">
+                                <option value="days">day(s)</option>
+                                <option value="weeks" selected>week(s)</option>
+                                <option value="months">month(s)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Repeat on</label>
+                        <div class="day-selector">
+                            <button type="button" class="day-btn" data-day="sun">S</button>
+                            <button type="button" class="day-btn" data-day="mon">M</button>
+                            <button type="button" class="day-btn active" data-day="tue">T</button>
+                            <button type="button" class="day-btn" data-day="wed">W</button>
+                            <button type="button" class="day-btn" data-day="thu">T</button>
+                            <button type="button" class="day-btn" data-day="fri">F</button>
+                            <button type="button" class="day-btn" data-day="sat">S</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ends</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="endType" value="never" checked>
+                                Never (until package duration ends)
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="endType" value="date">
+                                On date: <input type="date" id="endDate" class="form-control inline" disabled>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="endType" value="occurrences">
+                                After <input type="number" id="maxOccurrences" class="form-control small inline" disabled min="1"> occurrences
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="pattern-preview">
+                        <strong>Pattern Preview:</strong><br>
+                        <span id="patternDescription">Every Tuesday for 8 weeks</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="hideCustomRecurrence()">Cancel</button>
+                    <button class="btn btn-primary" onclick="applyCustomRecurrence()">Apply Pattern</button>
                 </div>
             </div>
         </div>

@@ -702,6 +702,122 @@ label {
     margin-top: 1rem;
 }
 
+/* New Package Features */
+.sessions-preview {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+}
+
+.sessions-count {
+    color: #6c757d;
+    font-style: italic;
+}
+
+.capacity-warning {
+    margin-top: 0.5rem;
+    color: #e74c3c;
+    font-size: 0.9rem;
+}
+
+.location-list {
+    margin-bottom: 1rem;
+}
+
+.location-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.location-item .form-control {
+    flex: 1;
+}
+
+.batches-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.batches-list {
+    margin-bottom: 1rem;
+}
+
+.batch-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.batch-capacity {
+    color: #6c757d;
+    font-size: 0.9rem;
+    min-width: 80px;
+}
+
+.schedule-preview {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: #e3f2fd;
+    border-radius: 8px;
+    border: 1px solid #bbdefb;
+}
+
+.schedule-summary {
+    color: #1976d2;
+}
+
+.exceptions-list {
+    margin-bottom: 1rem;
+}
+
+.exception-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+}
+
+.exception-date {
+    font-weight: 500;
+}
+
+.exception-reason {
+    color: #856404;
+    font-size: 0.9rem;
+}
+
+.repeat-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.pattern-preview {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    color: #495057;
+}
+
+.form-control.inline {
+    display: inline-block;
+    width: auto;
+    margin: 0 5px;
+}
+
 /* Session Edit/Cancel Modals */
 .current-session-info {
     background-color: #f8f9fa;

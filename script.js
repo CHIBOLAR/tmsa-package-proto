@@ -62,6 +62,146 @@ function createCopy() {
     }, 100);
 }
 
+// New Business Logic Functions
+function calculateSessions() {
+    const packageDuration = document.getElementById('packageDuration')?.value;
+    const frequency = document.getElementById('frequency')?.value;
+    const activeDays = document.querySelectorAll('.day-btn.active').length;
+    
+    if (!packageDuration || !frequency) return;
+    
+    const weeks = parseInt(packageDuration.split('-')[0]);
+    let sessionsPerWeek = 0;
+    
+    switch(frequency) {
+        case '1x': sessionsPerWeek = 1; break;
+        case '2x': sessionsPerWeek = 2; break;
+        case '3x': sessionsPerWeek = 3; break;
+        case 'custom': sessionsPerWeek = activeDays; break;
+        default: sessionsPerWeek = 2;
+    }
+    
+    const totalSessions = weeks * sessionsPerWeek;
+    
+    // Update sessions preview
+    const preview = document.querySelector('.sessions-count');
+    if (preview) {
+        preview.textContent = `${totalSessions} sessions will be scheduled (${weeks} weeks × ${sessionsPerWeek} per week)`;
+    }
+    
+    // Update schedule preview
+    const schedulePreview = document.querySelector('.schedule-summary');
+    if (schedulePreview) {
+        const startDate = new Date(document.getElementById('startDate')?.value || Date.now());
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + (weeks * 7));
+        
+        schedulePreview.innerHTML = `
+            <strong>Schedule Preview:</strong><br>
+            ${totalSessions} sessions over ${weeks} weeks (ends ${endDate.toLocaleDateString()})<br>
+            ${sessionsPerWeek} sessions per week
+        `;
+    }
+    
+    return totalSessions;
+}
+
+function updatePerSessionPrice() {
+    const packagePrice = parseFloat(document.getElementById('packagePrice')?.value) || 0;
+    const totalSessions = calculateSessions() || 16;
+    const perSession = packagePrice / totalSessions;
+    
+    const perSessionDisplay = document.querySelector('.per-session');
+    if (perSessionDisplay) {
+        perSessionDisplay.textContent = `Per session: ₹${perSession.toFixed(2)} (auto-calculated from ${totalSessions} sessions)`;
+    }
+}
+
+// Location Management
+function addLocation() {
+    const locationList = document.querySelector('.location-list');
+    const newLocation = document.createElement('div');
+    newLocation.className = 'location-item';
+    newLocation.innerHTML = `
+        <input type="text" placeholder="Location name" class="form-control">
+        <input type="text" placeholder="Full address" class="form-control">
+        <button type="button" class="btn btn-small btn-danger" onclick="removeLocation(this)">Remove</button>
+    `;
+    locationList.appendChild(newLocation);
+}
+
+function removeLocation(button) {
+    button.parentElement.remove();
+}
+
+// Batch Management
+function addBatch() {
+    const batchesList = document.querySelector('.batches-list');
+    const newBatch = document.createElement('div');
+    newBatch.className = 'batch-item';
+    newBatch.innerHTML = `
+        <select class="form-control">
+            <option value="6:00">6:00 AM</option>
+            <option value="7:00">7:00 AM</option>
+            <option value="8:00">8:00 AM</option>
+            <option value="9:00">9:00 AM</option>
+            <option value="10:00">10:00 AM</option>
+            <option value="17:00">5:00 PM</option>
+            <option value="18:00">6:00 PM</option>
+            <option value="19:00">7:00 PM</option>
+        </select>
+        <span class="batch-capacity">0/${document.getElementById('maxCapacity')?.value || 8} enrolled</span>
+        <button type="button" class="btn btn-small btn-danger" onclick="removeBatch(this)">Remove</button>
+    `;
+    batchesList.appendChild(newBatch);
+}
+
+function removeBatch(button) {
+    button.parentElement.remove();
+}
+
+// Exception Management
+function addException() {
+    const date = document.getElementById('exceptionDate').value;
+    const reason = document.getElementById('exceptionReason').value;
+    
+    if (!date) return;
+    
+    const exceptionsList = document.querySelector('.exceptions-list');
+    const newException = document.createElement('div');
+    newException.className = 'exception-item';
+    newException.innerHTML = `
+        <div>
+            <div class="exception-date">${new Date(date).toLocaleDateString()}</div>
+            <div class="exception-reason">${document.getElementById('exceptionReason').options[document.getElementById('exceptionReason').selectedIndex].text}</div>
+        </div>
+        <button type="button" class="btn btn-small btn-danger" onclick="removeException(this)">Remove</button>
+    `;
+    exceptionsList.appendChild(newException);
+    
+    // Clear inputs
+    document.getElementById('exceptionDate').value = '';
+    document.getElementById('exceptionReason').selectedIndex = 0;
+}
+
+function removeException(button) {
+    button.parentElement.remove();
+}
+
+// Custom Recurrence
+function showCustomRecurrence() {
+    document.getElementById('custom-recurrence-modal').classList.add('active');
+}
+
+function hideCustomRecurrence() {
+    document.getElementById('custom-recurrence-modal').classList.remove('active');
+}
+
+function applyCustomRecurrence() {
+    hideCustomRecurrence();
+    calculateSessions();
+}
+
 // Form Interactions
 document.addEventListener('DOMContentLoaded', function() {
     // Day selector functionality
@@ -69,32 +209,51 @@ document.addEventListener('DOMContentLoaded', function() {
     dayButtons.forEach(btn => {
         btn.addEventListener('click', function() {
             this.classList.toggle('active');
+            calculateSessions();
         });
     });
     
+    // Package duration change
+    const packageDuration = document.getElementById('packageDuration');
+    if (packageDuration) {
+        packageDuration.addEventListener('change', calculateSessions);
+    }
+    
+    // Frequency change
+    const frequency = document.getElementById('frequency');
+    if (frequency) {
+        frequency.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                showCustomRecurrence();
+            } else {
+                calculateSessions();
+            }
+        });
+    }
+    
     // Auto-calculate per session price
     const packagePriceInput = document.getElementById('packagePrice');
-    const totalSessionsInput = document.getElementById('totalSessions');
-    
-    function updatePerSessionPrice() {
-        if (packagePriceInput && totalSessionsInput) {
-            const packagePrice = parseFloat(packagePriceInput.value) || 0;
-            const totalSessions = parseInt(totalSessionsInput.value) || 1;
-            const perSession = packagePrice / totalSessions;
-            
-            const perSessionDisplay = document.querySelector('.per-session');
-            if (perSessionDisplay) {
-                perSessionDisplay.textContent = `Per session: ₹${perSession.toFixed(2)} (auto-calculated)`;
-            }
-        }
-    }
     
     if (packagePriceInput) {
         packagePriceInput.addEventListener('input', updatePerSessionPrice);
     }
     
-    if (totalSessionsInput) {
-        totalSessionsInput.addEventListener('input', updatePerSessionPrice);
+    // Capacity validation
+    const minCapacity = document.getElementById('minCapacity');
+    const maxCapacity = document.getElementById('maxCapacity');
+    
+    if (minCapacity && maxCapacity) {
+        minCapacity.addEventListener('input', function() {
+            if (parseInt(this.value) > parseInt(maxCapacity.value)) {
+                maxCapacity.value = this.value;
+            }
+        });
+        
+        maxCapacity.addEventListener('input', function() {
+            if (parseInt(this.value) < parseInt(minCapacity.value)) {
+                minCapacity.value = this.value;
+            }
+        });
     }
     
     // Update buffer time display
