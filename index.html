@@ -122,7 +122,7 @@
                     <p>Basic details about your training package</p>
                 </div>
 
-                <form class="wizard-form">
+                <div class="wizard-form">
                     <div class="form-section">
                         <div class="form-group">
                             <label for="packageName">Package Name *</label>
@@ -258,7 +258,7 @@
                         <button type="button" class="btn btn-secondary" onclick="showDashboard()">Cancel</button>
                         <button type="button" class="btn btn-primary" onclick="goToStep2()">Next: Schedule →</button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
 
@@ -277,7 +277,7 @@
                     <p>Configure when and how often training sessions occur</p>
                 </div>
 
-                <form class="wizard-form">
+                <div class="wizard-form">
                     <div class="form-section">
                         <div class="schedule-type-banner">
                             <h3>🗓️ Choose Your Schedule Approach</h3>
@@ -449,7 +449,7 @@
                         <button type="button" class="btn btn-secondary" onclick="goToStep1()">← Back</button>
                         <button type="button" class="btn btn-primary" onclick="goToStep3()">Next: Details →</button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
 
@@ -468,7 +468,7 @@
                     <p>Location, equipment, and description</p>
                 </div>
 
-                <form class="wizard-form">
+                <div class="wizard-form">
                     <div class="form-section">
                         <h3>Equipment & Requirements</h3>
                         <div class="form-group">
@@ -513,10 +513,10 @@
                                 </div>
                             </div>
                             
-                            <div class="preview-sessions">
-                                <h4>Session Schedule</h4>
-                                <div id="sessionsList" class="sessions-list">
-                                    <!-- Will show complete list of sessions with cancel options -->
+                            <div class="preview-schedule">
+                                <h4>Schedule Overview</h4>
+                                <div id="scheduleOverview" class="schedule-overview">
+                                    <!-- Will show schedule summary without individual sessions -->
                                 </div>
                             </div>
                             
@@ -530,9 +530,9 @@
 
                     <div class="wizard-actions">
                         <button type="button" class="btn btn-secondary" onclick="goToStep2()">← Back</button>
-                        <button type="button" class="btn btn-primary btn-large" onclick="createPackage()">🎉 Create Package</button>
+                        <button type="button" class="btn btn-primary btn-large" onclick="event.preventDefault(); createPackage(); return false;">🎉 Create Package</button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
 
@@ -571,8 +571,8 @@
                         <h3>🚀 What's Next?</h3>
                         <ul>
                             <li>Share the booking link with potential participants</li>
-                            <li>Monitor bookings and enrollments</li>
-                            <li>Manage schedule and sessions as needed</li>
+                            <li>View individual sessions in the Package Calendar 📅</li>
+                            <li>Monitor bookings and manage capacity</li>
                             <li>Create more packages for different training types</li>
                         </ul>
                     </div>

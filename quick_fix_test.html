@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Fix Verification Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .test-container { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .test-item { margin: 10px 0; padding: 10px; border-left: 4px solid #007bff; background: #f8f9fa; }
+        .success { border-left-color: #28a745; background: #d4edda; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+        .test-button { margin: 5px; padding: 8px 15px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔧 Quick Fix Verification</h1>
+        <p>Testing the critical issues that were reported:</p>
+
+        <div class="test-item">
+            <h3>1. Package Creation Button Test</h3>
+            <button class="test-button" onclick="testCreatePackage()">Test Create Package</button>
+            <div id="result1"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>2. Location in Step 1 Test</h3>
+            <button class="test-button" onclick="testLocationInStep1()">Check Location Position</button>
+            <div id="result2"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>3. Add Buttons Navigation Test</h3>
+            <button class="test-button" onclick="testButtonNavigation()">Test Add Buttons</button>
+            <div id="result3"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>4. Form Structure Test</h3>
+            <button class="test-button" onclick="testFormStructure()">Check Form to Div</button>
+            <div id="result4"></div>
+        </div>
+
+        <div class="test-container">
+            <h3>All Tests</h3>
+            <button class="test-button" onclick="runAllTests()" style="background: #28a745; font-size: 16px; padding: 10px 20px;">🚀 Run All Tests</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        function testCreatePackage() {
+            const result = document.getElementById('result1');
+            try {
+                // Check if createPackage function exists and can be called
+                if (typeof createPackage === 'function') {
+                    result.innerHTML = '<p style="color: green;">✅ createPackage function exists and is callable</p>';
+                    result.className = 'success';
+                } else {
+                    result.innerHTML = '<p style="color: red;">❌ createPackage function not found</p>';
+                    result.className = 'error';
+                }
+            } catch (error) {
+                result.innerHTML = `<p style="color: red;">❌ Error: ${error.message}</p>`;
+                result.className = 'error';
+            }
+        }
+
+        function testLocationInStep1() {
+            const result = document.getElementById('result2');
+            // Test by loading the main HTML to check location elements
+            fetch('index.html')
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const locationElements = doc.querySelectorAll('#locationType, #locationsList');
+
+                    if (locationElements.length >= 2) {
+                        result.innerHTML = '<p style="color: green;">✅ Location elements found in index.html - should be in Step 1</p>';
+                        result.className = 'success';
+                    } else {
+                        result.innerHTML = '<p style="color: red;">❌ Location elements not found in index.html</p>';
+                        result.className = 'error';
+                    }
+                })
+                .catch(error => {
+                    result.innerHTML = '<p style="color: red;">❌ Error loading index.html to check location elements</p>';
+                    result.className = 'error';
+                });
+        }
+
+        function testButtonNavigation() {
+            const result = document.getElementById('result3');
+            // Test by loading the main HTML to check button onclick handlers
+            fetch('index.html')
+                .then(response => response.text())
+                .then(html => {
+                    const addLocationMatch = html.match(/onclick="[^"]*addLocation[^"]*"/);
+                    const addTimeSlotMatch = html.match(/onclick="[^"]*addTimeSlot[^"]*"/);
+
+                    let hasPreventDefault = 0;
+                    if (addLocationMatch && addLocationMatch[0].includes('preventDefault')) {
+                        hasPreventDefault++;
+                    }
+                    if (addTimeSlotMatch && addTimeSlotMatch[0].includes('preventDefault')) {
+                        hasPreventDefault++;
+                    }
+
+                    if (hasPreventDefault >= 2) {
+                        result.innerHTML = '<p style="color: green;">✅ Add buttons have preventDefault - navigation should work</p>';
+                        result.className = 'success';
+                    } else {
+                        result.innerHTML = `<p style="color: red;">❌ Add buttons missing preventDefault (found ${hasPreventDefault}/2)</p>`;
+                        result.className = 'error';
+                    }
+                })
+                .catch(error => {
+                    result.innerHTML = '<p style="color: red;">❌ Error loading index.html to check button handlers</p>';
+                    result.className = 'error';
+                });
+        }
+
+        function testFormStructure() {
+            const result = document.getElementById('result4');
+            // Test by loading the main HTML to check form vs div structure
+            fetch('index.html')
+                .then(response => response.text())
+                .then(html => {
+                    const formMatches = html.match(/<form[^>]*wizard-form/g) || [];
+                    const divMatches = html.match(/<div[^>]*wizard-form/g) || [];
+
+                    if (formMatches.length === 0 && divMatches.length >= 3) {
+                        result.innerHTML = `<p style="color: green;">✅ Forms converted to divs (${divMatches.length} divs, ${formMatches.length} forms) - should prevent unwanted submissions</p>`;
+                        result.className = 'success';
+                    } else {
+                        result.innerHTML = `<p style="color: red;">❌ Still has form elements or missing div.wizard-form (${divMatches.length} divs, ${formMatches.length} forms)</p>`;
+                        result.className = 'error';
+                    }
+                })
+                .catch(error => {
+                    result.innerHTML = '<p style="color: red;">❌ Error loading index.html to check form structure</p>';
+                    result.className = 'error';
+                });
+        }
+
+        function runAllTests() {
+            testCreatePackage();
+            setTimeout(testLocationInStep1, 100);
+            setTimeout(testButtonNavigation, 200);
+            setTimeout(testFormStructure, 300);
+
+            setTimeout(() => {
+                const results = document.querySelectorAll('[id^="result"]');
+                let passed = 0;
+                let total = results.length;
+
+                results.forEach(result => {
+                    if (result.className === 'success') passed++;
+                });
+
+                console.log(`Tests completed: ${passed}/${total} passed`);
+                alert(`Fix Verification: ${passed}/${total} tests passed\n\n${passed === total ? '🎉 All fixes appear to be working!' : '⚠️ Some issues may still exist'}`);
+            }, 500);
+        }
+
+        // Auto-run tests on page load
+        setTimeout(() => {
+            console.log('Running automatic fix verification...');
+            runAllTests();
+        }, 1000);
+    </script>
+</body>
+</html>

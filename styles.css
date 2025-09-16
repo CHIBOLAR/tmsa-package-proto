@@ -1247,6 +1247,35 @@ textarea.form-control {
     gap: 20px;
 }
 
+/* Schedule overview styling */
+.schedule-summary {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.schedule-item {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.schedule-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.schedule-note {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: #e8f4f8;
+    border-left: 4px solid var(--primary-color);
+    color: #0c5460;
+    border-radius: 4px;
+}
+
 /* Fix missing modal functionality */
 .modal.active {
     display: flex !important;
