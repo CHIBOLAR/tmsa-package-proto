@@ -15,23 +15,23 @@ function showDashboard() {
 }
 
 function showCreatePackage() {
-    showView('create-package-step1');
+    showView('step1');
 }
 
 function showCreatePackageStep1() {
-    showView('create-package-step1');
+    showView('step1');
 }
 
 function showCreatePackageStep2() {
-    showView('create-package-step2');
+    showView('step2');
 }
 
 function showCreatePackageStep3() {
-    showView('create-package-step3');
+    showView('step3');
 }
 
 function showPackageCreated() {
-    showView('package-created');
+    showView('success');
 }
 
 function showCalendar() {
@@ -462,7 +462,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateDurationDisplay();
     
     // Enhanced button event listeners with validation
-    const step1NextButton = document.querySelector('#create-package-step1 .btn-primary');
+    const step1NextButton = document.querySelector('#step1 .btn-primary');
     if (step1NextButton) {
         step1NextButton.addEventListener('click', function(e) {
             e.preventDefault();
@@ -470,7 +470,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    const step2NextButton = document.querySelector('#create-package-step2 .btn-primary');
+    const step2NextButton = document.querySelector('#step2 .btn-primary');
     if (step2NextButton) {
         step2NextButton.addEventListener('click', function(e) {
             e.preventDefault();
@@ -478,7 +478,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    const step3CreateButton = document.querySelector('#create-package-step3 .btn-success');
+    const step3CreateButton = document.querySelector('#step3 .btn-primary');
     if (step3CreateButton) {
         step3CreateButton.addEventListener('click', function(e) {
             e.preventDefault();
@@ -487,7 +487,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Back button handlers
-    const step2BackButton = document.querySelector('#create-package-step2 .btn-secondary');
+    const step2BackButton = document.querySelector('#step2 .btn-secondary');
     if (step2BackButton) {
         step2BackButton.addEventListener('click', function(e) {
             e.preventDefault();
@@ -495,7 +495,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    const step3BackButton = document.querySelector('#create-package-step3 .btn-secondary');
+    const step3BackButton = document.querySelector('#step3 .btn-secondary');
     if (step3BackButton) {
         step3BackButton.addEventListener('click', function(e) {
             e.preventDefault();
@@ -520,7 +520,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Trigger conflict check when schedule changes
-    const scheduleInputs = document.querySelectorAll('#create-package-step2 input, #create-package-step2 select');
+    const scheduleInputs = document.querySelectorAll('#step2 input, #step2 select');
     scheduleInputs.forEach(input => {
         input.addEventListener('change', simulateConflictCheck);
     });
@@ -790,7 +790,7 @@ function validateStep3() {
 
 function displayErrors(step, errors) {
     // Clear existing errors
-    const existingErrors = document.querySelectorAll(`#create-package-${step} .validation-errors`);
+    const existingErrors = document.querySelectorAll(`#${step} .validation-errors`);
     existingErrors.forEach(error => error.remove());
     
     if (errors.length > 0) {
@@ -810,7 +810,7 @@ function displayErrors(step, errors) {
         
         errorContainer.appendChild(errorList);
         
-        const stepContainer = document.querySelector(`#create-package-${step} .form-container`);
+        const stepContainer = document.querySelector(`#${step} .form-container`);
         if (stepContainer) {
             stepContainer.insertBefore(errorContainer, stepContainer.firstChild);
         }
@@ -931,7 +931,7 @@ function generatePackageId(name) {
 
 function generatePackageSummary() {
     const data = collectPackageData();
-    const summaryContainer = document.querySelector('#create-package-step3 .form-section:last-child');
+    const summaryContainer = document.querySelector('#step3 .form-section:last-child');
     
     if (summaryContainer) {
         let summaryHTML = `
