@@ -562,7 +562,7 @@
                             <div class="link-container">
                                 <input type="text" id="bookingUrl" class="form-control" readonly>
                                 <button class="btn btn-secondary" onclick="copyBookingLink()">📋 Copy</button>
-                                <button class="btn btn-secondary">📧 Email</button>
+                                <button class="btn btn-secondary" onclick="emailBookingLink()">📧 Email</button>
                             </div>
                         </div>
                     </div>
@@ -580,7 +580,7 @@
                     <div class="success-actions">
                         <button class="btn btn-primary" onclick="showDashboard()">🏠 Go to Dashboard</button>
                         <button class="btn btn-secondary" onclick="showCreatePackage()">➕ Create Another</button>
-                        <button class="btn btn-secondary">📊 View Analytics</button>
+                        <button class="btn btn-secondary" onclick="viewAnalytics()">📊 View Analytics</button>
                     </div>
                 </div>
             </div>
@@ -633,6 +633,42 @@
                             <p>Select a day to view session details</p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Copy Package Modal -->
+        <div id="copy-package-modal" class="modal">
+            <div class="modal-content">
+                <h3>Copy Package</h3>
+                <p>Create a new package based on this one?</p>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="hideCopyPackage()">Cancel</button>
+                    <button class="btn btn-primary" onclick="createCopy()">Copy Package</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session Edit Modal -->
+        <div id="session-edit-modal" class="modal">
+            <div class="modal-content">
+                <h3>Edit Session</h3>
+                <p>Session editing functionality would go here.</p>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="hideSessionEdit()">Cancel</button>
+                    <button class="btn btn-primary" onclick="saveSessionChanges()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session Cancel Modal -->
+        <div id="session-cancel-modal" class="modal">
+            <div class="modal-content">
+                <h3>Cancel Session</h3>
+                <p>Are you sure you want to cancel this session?</p>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="hideSessionCancel()">Keep Session</button>
+                    <button class="btn btn-danger" onclick="confirmCancelSession()">Cancel Session</button>
                 </div>
             </div>
         </div>

@@ -298,6 +298,27 @@ function editSession(date) {
     alert('Session editing functionality would open here.');
 }
 
+// Missing button functions
+function toggleDay(button) {
+    button.classList.toggle('active');
+    updateSchedulePreview();
+}
+
+function emailBookingLink() {
+    const bookingLink = document.getElementById('booking-link')?.value;
+    if (bookingLink) {
+        const subject = encodeURIComponent('Training Package Booking Link');
+        const body = encodeURIComponent(`Hi,\n\nHere's the booking link for your training package:\n\n${bookingLink}\n\nBest regards`);
+        window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    } else {
+        alert('No booking link available to email.');
+    }
+}
+
+function viewAnalytics() {
+    alert('Analytics dashboard would open here with package performance metrics, booking rates, and revenue data.');
+}
+
 // Modal Functions
 function showCopyPackage() {
     document.getElementById('copy-package-modal').classList.add('active');
