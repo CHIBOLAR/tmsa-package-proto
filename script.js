@@ -579,13 +579,32 @@ function toggleParticipantType() {
     const participantType = document.querySelector('input[name="participantType"]:checked')?.value;
     const groupOptions = document.getElementById('groupOptions');
     
+    console.log('toggleParticipantType called with:', participantType);
+    
+    // Remove any existing flow indicators first
+    const existingIndicators = document.querySelectorAll('.flow-indicator');
+    existingIndicators.forEach(indicator => indicator.remove());
+    
     if (participantType === 'group') {
         if (groupOptions) {
             groupOptions.style.display = 'block';
+            groupOptions.style.background = '#f0f9ff';
+            groupOptions.style.padding = '20px';
+            groupOptions.style.borderRadius = '8px';
+            groupOptions.style.border = '2px solid #3b82f6';
+            groupOptions.style.marginTop = '16px';
         }
         
         // Show group-specific fields throughout the form
         showGroupSpecificFields();
+        
+        // Add visual indicator for group
+        const participantSection = document.querySelector('.participant-choice');
+        if (participantSection) {
+            participantSection.insertAdjacentHTML('afterend', 
+                '<div class="flow-indicator" style="background: #dcfdf4; border: 1px solid #10b981; padding: 12px; border-radius: 6px; margin: 16px 0; color: #047857;"><strong>🎯 Group Training Flow Active:</strong> Configure capacity and group settings below. Price is per participant.</div>'
+            );
+        }
     } else {
         if (groupOptions) {
             groupOptions.style.display = 'none';
@@ -593,7 +612,16 @@ function toggleParticipantType() {
         
         // Show individual-specific fields throughout the form
         showIndividualSpecificFields();
+        
+        // Add visual indicator for individual
+        const participantSection = document.querySelector('.participant-choice');
+        if (participantSection) {
+            participantSection.insertAdjacentHTML('afterend', 
+                '<div class="flow-indicator" style="background: #fef3c7; border: 1px solid #f59e0b; padding: 12px; border-radius: 6px; margin: 16px 0; color: #92400e;"><strong>👤 Individual Training Flow Active:</strong> Optimized for 1-on-1 personalized sessions.</div>'
+            );
+        }
     }
+    
     updateBatchStatuses();
     updateSchedulePreview();
 }
@@ -665,7 +693,7 @@ function updateBatchStatuses() {
     
     batchStatuses.forEach(status => {
         if (participantType === 'group') {
-            const maxCapacity = document.getElementById('maxCapacity')?.value || 8;
+            const maxCapacity = document.getElementById('maxParticipants')?.value || 8;
             status.textContent = `0/${maxCapacity} enrolled`;
         } else {
             status.textContent = 'Available for booking';
@@ -806,7 +834,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize displays
     updatePerSessionPrice();
     updateSchedulePreview();
-    toggleParticipantType();
+    
+    // Initialize participant type - call this after DOM is ready
+    setTimeout(() => {
+        toggleParticipantType();
+    }, 100);
+    
     toggleScheduleType();
     updateDurationDisplay();
     
@@ -1211,7 +1244,7 @@ function collectPackageData() {
     const packagePrice = parseFloat(document.getElementById('packagePrice')?.value) || 0;
     const participantType = document.querySelector('input[name="participantType"]:checked')?.value;
     const scheduleType = document.querySelector('input[name="scheduleType"]:checked')?.value;
-    const description = document.getElementById('packageDescription')?.value?.trim();
+    const description = document.getElementById('description')?.value?.trim();
     
     const data = {
         name: packageName,
@@ -1224,8 +1257,8 @@ function collectPackageData() {
     };
     
     if (participantType === 'group') {
-        data.minCapacity = parseInt(document.getElementById('minCapacity')?.value) || 2;
-        data.maxCapacity = parseInt(document.getElementById('maxCapacity')?.value) || 8;
+        data.minCapacity = parseInt(document.getElementById('minParticipants')?.value) || 3;
+        data.maxCapacity = parseInt(document.getElementById('maxParticipants')?.value) || 8;
     }
     
     if (scheduleType === 'days') {
